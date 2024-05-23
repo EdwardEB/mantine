@@ -30,7 +30,7 @@ export interface ProgressSectionProps
   /** Key of `theme.colors` or any valid CSS value, `theme.primaryColor` by default */
   color?: MantineColor;
 
-  /** Determines whether the section should have stipes, `false` by default */
+  /** Determines whether the section should have stripes, `false` by default */
   striped?: boolean;
 
   /** Determines whether the sections stripes should be animated, if set, `striped` prop is ignored, `false` by default */
@@ -88,7 +88,7 @@ export const ProgressSection = factory<ProgressSectionFactory>((props, ref) => {
         '--progress-section-width': `${value}%`,
         '--progress-section-color': getThemeColor(color, theme),
         '--progress-label-color': getAutoContrastValue(ctx.autoContrast, theme)
-          ? getContrastColor({ color, theme })
+          ? getContrastColor({ color, theme, autoContrast: ctx.autoContrast })
           : undefined,
       }}
     />

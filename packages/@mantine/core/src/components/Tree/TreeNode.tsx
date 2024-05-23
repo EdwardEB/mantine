@@ -4,7 +4,11 @@ import { findElementAncestor, GetStylesApi } from '../../core';
 import type { RenderNode, TreeFactory, TreeNodeData } from './Tree';
 import type { TreeController } from './use-tree';
 
-function getValuesRange(anchor: string, value: string, flatValues: string[]) {
+function getValuesRange(anchor: string | null, value: string | undefined, flatValues: string[]) {
+  if (!anchor || !value) {
+    return [];
+  }
+
   const anchorIndex = flatValues.indexOf(anchor);
   const valueIndex = flatValues.indexOf(value);
   const start = Math.min(anchorIndex, valueIndex);
@@ -25,6 +29,7 @@ interface TreeNodeProps {
   renderNode: RenderNode | undefined;
   selectOnClick: boolean | undefined;
   allowRangeSelection: boolean | undefined;
+  expandOnSpace: boolean | undefined;
 }
 
 export function TreeNode({
@@ -39,6 +44,7 @@ export function TreeNode({
   renderNode,
   flatValues,
   allowRangeSelection,
+  expandOnSpace,
 }: TreeNodeProps) {
   const ref = useRef<HTMLLIElement>(null);
   const nested = (node.children || []).map((child) => (
@@ -55,6 +61,7 @@ export function TreeNode({
       renderNode={renderNode}
       selectOnClick={selectOnClick}
       allowRangeSelection={allowRangeSelection}
+      expandOnSpace={expandOnSpace}
     />
   ));
 
@@ -98,9 +105,19 @@ export function TreeNode({
 
       const nextIndex = event.nativeEvent.code === 'ArrowDown' ? index + 1 : index - 1;
       nodes[nextIndex]?.focus();
+
+      if (event.shiftKey) {
+        const selectNode = nodes[nextIndex];
+
+        if (selectNode) {
+          controller.setSelectedState(
+            getValuesRange(controller.anchorNode, selectNode.dataset.value, flatValues)
+          );
+        }
+      }
     }
 
-    if (event.nativeEvent.code === 'Space' && expandOnClick) {
+    if (event.nativeEvent.code === 'Space' && expandOnSpace) {
       event.stopPropagation();
       event.preventDefault();
       controller.toggleExpanded(node.value);
@@ -126,6 +143,7 @@ export function TreeNode({
     onClick: handleNodeClick,
     'data-selected': selected || undefined,
     'data-value': node.value,
+    'data-hovered': controller.hoveredNode === node.value || undefined,
   };
 
   return (
@@ -135,11 +153,21 @@ export function TreeNode({
       })}
       role="treeitem"
       aria-selected={selected}
+      data-value={node.value}
       data-selected={selected || undefined}
+      data-hovered={controller.hoveredNode === node.value || undefined}
+      data-level={level}
       tabIndex={rootIndex === 0 ? 0 : -1}
       onKeyDown={handleKeyDown}
-      data-level={level}
       ref={ref}
+      onMouseOver={(event) => {
+        event.stopPropagation();
+        controller.setHoveredNode(node.value);
+      }}
+      onMouseLeave={(event) => {
+        event.stopPropagation();
+        controller.setHoveredNode(null);
+      }}
     >
       {typeof renderNode === 'function' ? (
         renderNode({

@@ -24,22 +24,34 @@ export interface TreeNodeData {
   children?: TreeNodeData[];
 }
 
-export interface RenderNodePayload {
+export interface RenderTreeNodePayload {
+  /** Node level in the tree */
   level: number;
+
+  /** `true` if the node is expanded, applicable only for nodes with `children` */
   expanded: boolean;
+
+  /** `true` if the node has non-empty `children` array */
   hasChildren: boolean;
+
+  /** `true` if the node is selected */
   selected: boolean;
+
+  /** Node data from the `data` prop of `Tree` */
   node: TreeNodeData;
+
+  /** Props to spread into the root node element */
   elementProps: {
     className: string;
     style: React.CSSProperties;
     onClick: (event: React.MouseEvent) => void;
     'data-selected': boolean | undefined;
     'data-value': string;
+    'data-hovered': boolean | undefined;
   };
 }
 
-export type RenderNode = (payload: RenderNodePayload) => React.ReactNode;
+export type RenderNode = (payload: RenderTreeNodePayload) => React.ReactNode;
 
 export type TreeStylesNames = 'root' | 'node' | 'subtree' | 'label';
 export type TreeCssVariables = {
@@ -55,6 +67,9 @@ export interface TreeProps extends BoxProps, StylesApiProps<TreeFactory>, Elemen
 
   /** Determines whether tree node with children should be expanded on click, `true` by default */
   expandOnClick?: boolean;
+
+  /** Determines whether tree node with children should be expanded on space key press, `true` by default */
+  expandOnSpace?: boolean;
 
   /** Determines whether node should be selected on click, `false` by default */
   selectOnClick?: boolean;
@@ -92,6 +107,7 @@ export type TreeFactory = Factory<{
 const defaultProps: Partial<TreeProps> = {
   expandOnClick: true,
   allowRangeSelection: true,
+  expandOnSpace: true,
 };
 
 const varsResolver = createVarsResolver<TreeFactory>((_theme, { levelOffset }) => ({
@@ -116,6 +132,7 @@ export const Tree = factory<TreeFactory>((_props, ref) => {
     selectOnClick,
     clearSelectionOnOutsideClick,
     allowRangeSelection,
+    expandOnSpace,
     ...others
   } = props;
 
@@ -159,6 +176,7 @@ export const Tree = factory<TreeFactory>((_props, ref) => {
       renderNode={renderNode}
       flatValues={flatValues}
       allowRangeSelection={allowRangeSelection}
+      expandOnSpace={expandOnSpace}
     />
   ));
 
