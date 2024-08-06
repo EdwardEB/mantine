@@ -262,6 +262,7 @@ export const MDX_PAGES_GROUPS: MdxPagesGroup[] = [
           MDX_DATA.Skeleton,
           MDX_DATA.Progress,
           MDX_DATA.RingProgress,
+          MDX_DATA.SemiCircleProgress,
         ],
       },
       {
@@ -376,6 +377,7 @@ export const MDX_PAGES_GROUPS: MdxPagesGroup[] = [
   {
     group: 'changelog',
     pages: [
+      MDX_DATA.Changelog7120,
       MDX_DATA.Changelog7110,
       MDX_DATA.Changelog7100,
       MDX_DATA.Changelog790,
