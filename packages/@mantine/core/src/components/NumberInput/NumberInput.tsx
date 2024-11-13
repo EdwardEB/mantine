@@ -38,18 +38,14 @@ function getDecimalPlaces(inputValue: string | number): number {
   return inputValue.toString().replace('.', '').length;
 }
 
-function isValidNumber(
-  floatValue: number | undefined,
-  value: string | undefined
-): floatValue is number {
-  if (typeof value === 'string') {
-    return getDecimalPlaces(value) < 14 && value !== '';
-  }
-
+function isValidNumber(floatValue: number | undefined, value: string): floatValue is number {
   return (
     (typeof floatValue === 'number'
       ? floatValue < Number.MAX_SAFE_INTEGER
-      : !Number.isNaN(Number(floatValue))) && !Number.isNaN(floatValue)
+      : !Number.isNaN(Number(floatValue))) &&
+    !Number.isNaN(floatValue) &&
+    getDecimalPlaces(value) < 14 &&
+    value !== ''
   );
 }
 
@@ -164,7 +160,7 @@ export interface NumberInputProps
 
 export type NumberInputFactory = Factory<{
   props: NumberInputProps;
-  ref: HTMLDivElement;
+  ref: HTMLInputElement;
   stylesNames: NumberInputStylesNames;
   vars: NumberInputCssVariables;
   variant: InputVariant;
@@ -481,7 +477,7 @@ export const NumberInput = factory<NumberInputFactory>((_props, ref) => {
           setValue(
             Number.isNaN(parsedValue) || parsedValue > Number.MAX_SAFE_INTEGER
               ? replaced
-              : parsedValue
+              : clamp(parsedValue, min, max)
           );
         }
       }}
