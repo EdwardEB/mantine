@@ -10,7 +10,7 @@ function setColorSchemeAttribute(
   const hasDarkColorScheme =
     typeof window !== 'undefined' &&
     'matchMedia' in window &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches;
+    window.matchMedia('(prefers-color-scheme: dark)')?.matches;
 
   const computedColorScheme =
     colorScheme !== 'auto' ? colorScheme : hasDarkColorScheme ? 'dark' : 'light';
@@ -32,7 +32,7 @@ export function useProviderColorScheme({
   getRootElement,
   forceColorScheme,
 }: UseProviderColorSchemeOptions) {
-  const media = useRef<MediaQueryList>();
+  const media = useRef<MediaQueryList>(null);
   const [value, setValue] = useState(() => manager.get(defaultColorScheme));
   const colorSchemeValue = forceColorScheme || value;
 

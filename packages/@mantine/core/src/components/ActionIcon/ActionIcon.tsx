@@ -18,6 +18,7 @@ import { Loader, LoaderProps } from '../Loader';
 import { Transition } from '../Transition';
 import { UnstyledButton } from '../UnstyledButton';
 import { ActionIconGroup } from './ActionIconGroup/ActionIconGroup';
+import { ActionIconGroupSection } from './ActionIconGroupSection/ActionIconGroupSection';
 import classes from './ActionIcon.module.css';
 
 export type ActionIconVariant =
@@ -53,7 +54,7 @@ export interface ActionIconProps extends BoxProps, StylesApiProps<ActionIconFact
   loaderProps?: LoaderProps;
 
   /** Controls width and height of the button. Numbers are converted to rem. `'md'` by default. */
-  size?: MantineSize | (string & {}) | number;
+  size?: MantineSize | `input-${MantineSize}` | (string & {}) | number;
 
   /** Key of `theme.colors` or any valid CSS color. Default value is `theme.primaryColor`.  */
   color?: MantineColor;
@@ -83,6 +84,7 @@ export type ActionIconFactory = PolymorphicFactory<{
   vars: ActionIconCssVariables;
   staticComponents: {
     Group: typeof ActionIconGroup;
+    GroupSection: typeof ActionIconGroupSection;
   };
 }>;
 
@@ -179,3 +181,4 @@ export const ActionIcon = polymorphicFactory<ActionIconFactory>((_props, ref) =>
 ActionIcon.classes = classes;
 ActionIcon.displayName = '@mantine/core/ActionIcon';
 ActionIcon.Group = ActionIconGroup;
+ActionIcon.GroupSection = ActionIconGroupSection;

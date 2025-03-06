@@ -5,7 +5,6 @@ import {
   ElementProps,
   factory,
   Factory,
-  rem,
   UnstyledButton,
   useProps,
 } from '@mantine/core';
@@ -67,6 +66,7 @@ export const RichTextEditorControl = factory<RichTextEditorControlFactory>((_pro
       aria-hidden={!interactive || undefined}
       ref={ref}
       unstyled={ctx.unstyled}
+      variant={ctx.variant || 'default'}
       onMouseDown={(event) => {
         event.preventDefault();
         onMouseDown?.(event);
@@ -85,11 +85,15 @@ export interface RichTextEditorControlBaseProps extends RichTextEditorControlPro
 export const RichTextEditorControlBase = forwardRef<
   HTMLButtonElement,
   RichTextEditorControlBaseProps
->(({ className, icon: Icon, ...others }: any, ref) => (
-  <RichTextEditorControl ref={ref} {...others}>
-    <Icon style={{ width: rem(16), height: rem(16) }} />
-  </RichTextEditorControl>
-));
+>(({ className, icon: Icon, ...others }: any, ref) => {
+  const ctx = useRichTextEditorContext();
+
+  return (
+    <RichTextEditorControl ref={ref} {...others}>
+      <Icon {...ctx.getStyles('controlIcon')} />
+    </RichTextEditorControl>
+  );
+});
 
 RichTextEditorControlBase.displayName = '@mantine/tiptap/RichTextEditorControlBase';
 

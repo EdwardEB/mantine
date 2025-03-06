@@ -5,11 +5,11 @@ import {
   ElementProps,
   Factory,
   factory,
+  MantineColor,
   StylesApiProps,
   useProps,
   useResolvedStylesApi,
 } from '../../core';
-import { __CloseButtonProps } from '../CloseButton';
 import {
   Combobox,
   ComboboxItem,
@@ -21,7 +21,12 @@ import {
   OptionsDropdown,
   useCombobox,
 } from '../Combobox';
-import { __BaseInputProps, __InputStylesNames, InputVariant } from '../Input';
+import {
+  __BaseInputProps,
+  __InputStylesNames,
+  InputClearButtonProps,
+  InputVariant,
+} from '../Input';
 import { InputBase } from '../InputBase';
 import { ScrollAreaProps } from '../ScrollArea';
 
@@ -73,7 +78,7 @@ export interface SelectProps
   clearable?: boolean;
 
   /** Props passed down to the clear button */
-  clearButtonProps?: __CloseButtonProps & ElementProps<'button'>;
+  clearButtonProps?: InputClearButtonProps & ElementProps<'button'>;
 
   /** Props passed down to the hidden input */
   hiddenInputProps?: Omit<React.ComponentPropsWithoutRef<'input'>, 'value'>;
@@ -83,6 +88,9 @@ export interface SelectProps
 
   /** Props passed down to the underlying `ScrollArea` component in the dropdown */
   scrollAreaProps?: ScrollAreaProps;
+
+  /** Controls color of the default chevron, by default depends on the color scheme */
+  chevronColor?: MantineColor;
 }
 
 export type SelectFactory = Factory<{
@@ -148,6 +156,10 @@ export const Select = factory<SelectFactory>((_props, ref) => {
     onClear,
     autoComplete,
     scrollAreaProps,
+    __defaultRightSection,
+    __clearSection,
+    __clearable,
+    chevronColor,
     ...others
   } = props;
 
@@ -212,9 +224,8 @@ export const Select = factory<SelectFactory>((_props, ref) => {
     }
   }, [value, selectedOption]);
 
-  const clearButton = clearable && !!_value && !disabled && !readOnly && (
+  const clearButton = (
     <Combobox.ClearButton
-      size={size as string}
       {...clearButtonProps}
       onClear={() => {
         setValue(null, null);
@@ -223,6 +234,8 @@ export const Select = factory<SelectFactory>((_props, ref) => {
       }}
     />
   );
+
+  const _clearable = clearable && !!_value && !disabled && !readOnly;
 
   return (
     <>
@@ -254,11 +267,18 @@ export const Select = factory<SelectFactory>((_props, ref) => {
           <InputBase
             id={_id}
             ref={ref}
-            rightSection={
-              rightSection ||
-              clearButton || <Combobox.Chevron size={size} error={error} unstyled={unstyled} />
+            __defaultRightSection={
+              <Combobox.Chevron
+                size={size}
+                error={error}
+                unstyled={unstyled}
+                color={chevronColor}
+              />
             }
-            rightSectionPointerEvents={rightSectionPointerEvents || (clearButton ? 'all' : 'none')}
+            __clearSection={clearButton}
+            __clearable={_clearable}
+            rightSection={rightSection}
+            rightSectionPointerEvents={rightSectionPointerEvents || (_clearable ? 'all' : 'none')}
             {...others}
             size={size}
             __staticSelector="Select"

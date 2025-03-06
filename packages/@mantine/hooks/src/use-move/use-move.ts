@@ -18,7 +18,7 @@ interface useMoveHandlers {
   onScrubEnd?: () => void;
 }
 
-export function useMove<T extends HTMLElement = HTMLDivElement>(
+export function useMove<T extends HTMLElement = any>(
   onChange: (value: UseMovePosition) => void,
   handlers?: useMoveHandlers,
   dir: 'ltr' | 'rtl' = 'ltr'
@@ -34,13 +34,15 @@ export function useMove<T extends HTMLElement = HTMLDivElement>(
   }, []);
 
   useEffect(() => {
+    const node = ref.current;
+
     const onScrub = ({ x, y }: UseMovePosition) => {
       cancelAnimationFrame(frame.current);
 
       frame.current = requestAnimationFrame(() => {
-        if (mounted.current && ref.current) {
-          ref.current.style.userSelect = 'none';
-          const rect = ref.current.getBoundingClientRect();
+        if (mounted.current && node) {
+          node.style.userSelect = 'none';
+          const rect = node.getBoundingClientRect();
 
           if (rect.width && rect.height) {
             const _x = clamp((x - rect.left) / rect.width, 0, 1);
@@ -112,13 +114,13 @@ export function useMove<T extends HTMLElement = HTMLDivElement>(
       onScrub({ x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY });
     };
 
-    ref.current?.addEventListener('mousedown', onMouseDown);
-    ref.current?.addEventListener('touchstart', onTouchStart, { passive: false });
+    node?.addEventListener('mousedown', onMouseDown);
+    node?.addEventListener('touchstart', onTouchStart, { passive: false });
 
     return () => {
-      if (ref.current) {
-        ref.current.removeEventListener('mousedown', onMouseDown);
-        ref.current.removeEventListener('touchstart', onTouchStart);
+      if (node) {
+        node.removeEventListener('mousedown', onMouseDown);
+        node.removeEventListener('touchstart', onTouchStart);
       }
     };
   }, [dir, onChange]);

@@ -73,7 +73,7 @@ export function Header({ navbarOpened, onNavbarToggle, headerControlsProps }: He
 
           <Logo />
 
-          <Group gap="sm">
+          <Group gap={5}>
             <SearchMobileControl onSearch={searchHandlers.open} />
             <ColorSchemeControl />
           </Group>

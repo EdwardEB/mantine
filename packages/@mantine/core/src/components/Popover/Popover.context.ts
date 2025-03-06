@@ -17,7 +17,7 @@ interface PopoverContext {
   y: number;
   arrowX: number | undefined;
   arrowY: number | undefined;
-  arrowRef: React.RefObject<HTMLDivElement>;
+  arrowRef: React.RefObject<HTMLDivElement | null>;
   opened: boolean;
   transitionProps?: TransitionOverride;
   reference: (node: HTMLElement) => void;
@@ -37,6 +37,7 @@ interface PopoverContext {
   radius?: MantineRadius | undefined;
   shadow?: MantineShadow | undefined;
   onClose?: () => void;
+  onDismiss?: () => void;
   getDropdownId: () => string;
   getTargetId: () => string;
   controlled: boolean;

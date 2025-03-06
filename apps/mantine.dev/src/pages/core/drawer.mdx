@@ -68,6 +68,14 @@ prop to customize any [Transition](/core/transition/) properties:
 
 <Demo data={DrawerDemos.transitions} />
 
+## onExitTransitionEnd and onEnterTransitionEnd
+
+`onExitTransitionEnd` and `onEnterTransitionEnd` props can be used to run code after
+exit/enter transition is finished. For example, this is useful when you want to clear
+data after drawer is closed:
+
+<Demo data={DrawerDemos.transitionEnd} />
+
 ## Initial focus
 
 `Drawer` uses [FocusTrap](/core/focus-trap/) to trap focus. Add `data-autofocus`
@@ -150,6 +158,9 @@ Differences from using multiple `Drawer` components:
 - Only one overlay is rendered at a time
 
 <Demo data={DrawerDemos.stack} />
+
+Note that `Drawer.Stack` can only be used with `Drawer` component. Components built with `Drawer.Root`
+and other compound components are not compatible with `Drawer.Stack`.
 
 ## useDrawersStack hook
 

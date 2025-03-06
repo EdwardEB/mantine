@@ -21,7 +21,10 @@ export type YearPickerStylesNames = DecadeLevelGroupStylesNames;
 export interface YearPickerBaseProps<Type extends DatePickerType = 'default'>
   extends PickerBaseProps<Type>,
     DecadeLevelBaseSettings,
-    Omit<CalendarBaseProps, 'onNextYear' | 'onPreviousYear' | 'onNextMonth' | 'onPreviousMonth'> {}
+    Omit<
+      CalendarBaseProps,
+      'onNextYear' | 'onPreviousYear' | 'onNextMonth' | 'onPreviousMonth' | 'hasNextLevel'
+    > {}
 
 export interface YearPickerProps<Type extends DatePickerType = 'default'>
   extends BoxProps,
@@ -44,7 +47,9 @@ const defaultProps: Partial<YearPickerProps> = {
 
 type YearPickerComponent = (<Type extends DatePickerType = 'default'>(
   props: YearPickerProps<Type> & { ref?: React.ForwardedRef<HTMLDivElement> }
-) => JSX.Element) & { displayName?: string } & MantineComponentStaticProperties<YearPickerFactory>;
+) => React.JSX.Element) & {
+  displayName?: string;
+} & MantineComponentStaticProperties<YearPickerFactory>;
 
 export const YearPicker: YearPickerComponent = factory<YearPickerFactory>((_props, ref) => {
   const props = useProps('YearPicker', defaultProps, _props);

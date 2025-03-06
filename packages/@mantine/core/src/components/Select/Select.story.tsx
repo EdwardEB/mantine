@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useState } from 'react';
 import { Button } from '../Button';
 import { Select } from './Select';
@@ -13,7 +12,7 @@ export function Usage() {
         placeholder="Select something"
         onChange={console.log}
         allowDeselect={false}
-        dropdownOpened
+        chevronColor="violet"
       />
     </div>
   );

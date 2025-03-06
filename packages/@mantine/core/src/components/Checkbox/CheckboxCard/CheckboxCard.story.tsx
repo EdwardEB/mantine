@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useForm } from '@mantine/form';
 import { CheckboxGroup } from '../CheckboxGroup/CheckboxGroup';
 import { CheckboxIndicator } from '../CheckboxIndicator/CheckboxIndicator';
 import { CheckboxCard } from './CheckboxCard';
@@ -18,7 +19,7 @@ export function Usage() {
 }
 
 export function WithinGroup() {
-  const [value, setValue] = useState<string[]>([]);
+  const [value, setValue] = useState<string[]>(['1']);
 
   return (
     <div style={{ padding: 40 }}>
@@ -43,6 +44,25 @@ export function WithinGroup() {
       </CheckboxGroup>
 
       <div>{JSON.stringify(value)}</div>
+    </div>
+  );
+}
+
+export function WithUseForm() {
+  const form = useForm({ mode: 'uncontrolled', initialValues: { checkbox: true } });
+
+  return (
+    <div style={{ padding: 40 }}>
+      <CheckboxCard
+        p="md"
+        {...form.getInputProps('checkbox', { type: 'checkbox' })}
+        key={form.key('checkbox')}
+      >
+        <CheckboxIndicator />
+        Some label
+      </CheckboxCard>
+
+      {JSON.stringify(form.values)}
     </div>
   );
 }

@@ -71,6 +71,14 @@ prop to customize any [Transition](/core/transition/) properties:
 
 <Demo data={ModalDemos.transitions} />
 
+## onExitTransitionEnd and onEnterTransitionEnd
+
+`onExitTransitionEnd` and `onEnterTransitionEnd` props can be used to run code after
+exit/enter transition is finished. For example, this is useful when you want to clear
+data after modal is closed:
+
+<Demo data={ModalDemos.transitionEnd} />
+
 ## Initial focus
 
 Modal uses [FocusTrap](/core/focus-trap/) to trap focus. Add `data-autofocus`
@@ -151,6 +159,9 @@ Differences from using multiple `Modal` components:
 - Only one overlay is rendered at a time
 
 <Demo data={ModalDemos.stack} />
+
+Note that `Modal.Stack` can only be used with `Modal` component. Components built with `Modal.Root`
+and other compound components are not compatible with `Modal.Stack`.
 
 ## useModalsStack hook
 

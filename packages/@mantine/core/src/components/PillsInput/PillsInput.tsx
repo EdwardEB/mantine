@@ -40,7 +40,7 @@ export const PillsInput = factory<PillsInputFactory>((_props, ref) => {
     ...others
   } = props;
 
-  const fieldRef = useRef<HTMLInputElement>();
+  const fieldRef = useRef<HTMLInputElement>(null);
 
   return (
     <PillsInputProvider value={{ fieldRef, size: size!, disabled, hasError: !!error, variant }}>
@@ -57,8 +57,11 @@ export const PillsInput = factory<PillsInputFactory>((_props, ref) => {
         }}
         onClick={(event) => {
           event.preventDefault();
-          onClick?.(event);
-          fieldRef.current?.focus();
+          const fieldset = event.currentTarget.closest('fieldset');
+          if (!fieldset?.disabled) {
+            fieldRef.current?.focus();
+            onClick?.(event);
+          }
         }}
         {...others}
         multiline

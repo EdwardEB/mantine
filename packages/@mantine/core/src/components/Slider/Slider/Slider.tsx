@@ -28,6 +28,12 @@ import { getChangeValue } from '../utils/get-change-value/get-change-value';
 import { getFloatingValue } from '../utils/get-floating-value/get-gloating-value';
 import { getPosition } from '../utils/get-position/get-position';
 import { getPrecision } from '../utils/get-precision/get-precision';
+import {
+  getFirstMarkValue,
+  getLastMarkValue,
+  getNextMarkValue,
+  getPreviousMarkValue,
+} from '../utils/get-step-mark-value/get-step-mark-value';
 import classes from '../Slider.module.css';
 
 export interface SliderProps
@@ -108,6 +114,9 @@ export interface SliderProps
 
   /** Determines whether the selection should be only allowed from the given marks array, `false` by default */
   restrictToMarks?: boolean;
+
+  /** Props passed down to thumb element */
+  thumbProps?: React.ComponentPropsWithoutRef<'div'>;
 }
 
 export type SliderFactory = Factory<{
@@ -175,6 +184,7 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
     vars,
     hiddenInputProps,
     restrictToMarks,
+    thumbProps,
     ...others
   } = props;
 
@@ -201,8 +211,8 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
   });
 
   const valueRef = useRef(_value);
-  const root = useRef<HTMLDivElement>();
-  const thumb = useRef<HTMLDivElement>();
+  const root = useRef<HTMLDivElement>(null);
+  const thumb = useRef<HTMLDivElement>(null);
   const position = getPosition({ value: _value, min: min!, max: max! });
   const scaledValue = scale!(_value);
   const _label = typeof label === 'function' ? label(scaledValue) : label;
@@ -236,6 +246,7 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
     handleChange,
     {
       onScrubEnd: () =>
+        !disabled &&
         onChangeEnd?.(
           restrictToMarks && marks?.length
             ? findClosestNumber(
@@ -254,6 +265,14 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
         case 'ArrowUp': {
           event.preventDefault();
           thumb.current?.focus();
+
+          if (restrictToMarks && marks) {
+            const nextValue = getNextMarkValue(_value, marks);
+            setValue(nextValue);
+            onChangeEnd?.(nextValue);
+            break;
+          }
+
           const nextValue = getFloatingValue(
             Math.min(Math.max(_value + step!, min!), max!),
             precision
@@ -266,6 +285,15 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
         case 'ArrowRight': {
           event.preventDefault();
           thumb.current?.focus();
+
+          if (restrictToMarks && marks) {
+            const nextValue =
+              dir === 'rtl' ? getPreviousMarkValue(_value, marks) : getNextMarkValue(_value, marks);
+            setValue(nextValue);
+            onChangeEnd?.(nextValue);
+            break;
+          }
+
           const nextValue = getFloatingValue(
             Math.min(Math.max(dir === 'rtl' ? _value - step! : _value + step!, min!), max!),
             precision
@@ -278,6 +306,14 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
         case 'ArrowDown': {
           event.preventDefault();
           thumb.current?.focus();
+
+          if (restrictToMarks && marks) {
+            const nextValue = getPreviousMarkValue(_value, marks);
+            setValue(nextValue);
+            onChangeEnd?.(nextValue);
+            break;
+          }
+
           const nextValue = getFloatingValue(
             Math.min(Math.max(_value - step!, min!), max!),
             precision
@@ -290,6 +326,15 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
         case 'ArrowLeft': {
           event.preventDefault();
           thumb.current?.focus();
+
+          if (restrictToMarks && marks) {
+            const nextValue =
+              dir === 'rtl' ? getNextMarkValue(_value, marks) : getPreviousMarkValue(_value, marks);
+            setValue(nextValue);
+            onChangeEnd?.(nextValue);
+            break;
+          }
+
           const nextValue = getFloatingValue(
             Math.min(Math.max(dir === 'rtl' ? _value + step! : _value - step!, min!), max!),
             precision
@@ -302,6 +347,13 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
         case 'Home': {
           event.preventDefault();
           thumb.current?.focus();
+
+          if (restrictToMarks && marks) {
+            setValue(getFirstMarkValue(marks));
+            onChangeEnd?.(getFirstMarkValue(marks));
+            break;
+          }
+
           setValue(min!);
           onChangeEnd?.(min!);
           break;
@@ -310,6 +362,13 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
         case 'End': {
           event.preventDefault();
           thumb.current?.focus();
+
+          if (restrictToMarks && marks) {
+            setValue(getLastMarkValue(marks));
+            onChangeEnd?.(getLastMarkValue(marks));
+            break;
+          }
+
           setValue(max!);
           onChangeEnd?.(max!);
           break;
@@ -361,6 +420,7 @@ export const Slider = factory<SliderFactory>((_props, ref) => {
             showLabelOnHover={showLabelOnHover}
             isHovered={hovered}
             disabled={disabled}
+            {...thumbProps}
           >
             {thumbChildren}
           </Thumb>

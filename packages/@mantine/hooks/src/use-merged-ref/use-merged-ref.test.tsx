@@ -19,4 +19,18 @@ describe('@mantine/hook/use-merged-ref', () => {
     expect(fnRefValue! instanceof HTMLButtonElement).toBe(true);
     expect(objectRef.current instanceof HTMLButtonElement).toBe(true);
   });
+
+  it('when ref callback does not return a function, ref callback is called with null on unmount', () => {
+    const refCalled: unknown[] = [];
+
+    const fnRef = (node: HTMLButtonElement | null) => {
+      refCalled.push(node);
+    };
+
+    const { unmount } = render(<TestComponent refs={[fnRef]} />);
+    expect(refCalled).toEqual([expect.any(HTMLButtonElement)]);
+
+    unmount();
+    expect(refCalled).toEqual([expect.any(HTMLButtonElement), null]);
+  });
 });

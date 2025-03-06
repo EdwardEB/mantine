@@ -1,6 +1,6 @@
 {
   "name": "@mantine/carousel",
-  "version": "7.14.2",
+  "version": "7.17.1",
   "description": "Embla based carousel",
   "homepage": "https://mantine.dev/x/carousel/",
   "license": "MIT",
@@ -44,8 +44,8 @@
     "directory": "packages/@mantine/carousel"
   },
   "peerDependencies": {
-    "@mantine/core": "7.14.2",
-    "@mantine/hooks": "7.14.2",
+    "@mantine/core": "7.17.1",
+    "@mantine/hooks": "7.17.1",
     "embla-carousel-react": ">=7.0.0",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x"
@@ -53,6 +53,8 @@
   "devDependencies": {
     "@mantine-tests/core": "workspace:*",
     "@mantine/core": "workspace:*",
-    "@mantine/hooks": "workspace:*"
+    "@mantine/hooks": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "19.0.0"
   }
 }

@@ -20,6 +20,8 @@ import classes from '../Menu.module.css';
 export type MenuItemStylesNames = 'item' | 'itemLabel' | 'itemSection';
 
 export interface MenuItemProps extends BoxProps, CompoundStylesApiProps<MenuItemFactory> {
+  'data-disabled'?: boolean;
+
   /** Item label */
   children?: React.ReactNode;
 
@@ -62,13 +64,14 @@ export const MenuItem = polymorphicFactory<MenuItemFactory>((props, ref) => {
     rightSection,
     children,
     disabled,
+    'data-disabled': dataDisabled,
     ...others
   } = useProps('MenuItem', defaultProps, props);
 
   const ctx = useMenuContext();
   const theme = useMantineTheme();
   const { dir } = useDirection();
-  const itemRef = useRef<HTMLButtonElement>();
+  const itemRef = useRef<HTMLButtonElement>(null);
   const itemIndex = ctx.getItemIndex(itemRef.current!);
   const _others: any = others;
 
@@ -78,6 +81,9 @@ export const MenuItem = polymorphicFactory<MenuItemFactory>((props, ref) => {
   );
 
   const handleClick = createEventHandler(_others.onClick, () => {
+    if (dataDisabled) {
+      return;
+    }
     if (typeof closeMenuOnClick === 'boolean') {
       closeMenuOnClick && ctx.closeDropdownImmediately();
     } else {
@@ -103,14 +109,14 @@ export const MenuItem = polymorphicFactory<MenuItemFactory>((props, ref) => {
       role="menuitem"
       disabled={disabled}
       data-menu-item
-      data-disabled={disabled || undefined}
+      data-disabled={disabled || dataDisabled || undefined}
       data-hovered={ctx.hovered === itemIndex ? true : undefined}
       data-mantine-stop-propagation
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       onKeyDown={createScopedKeydownHandler({
-        siblingSelector: '[data-menu-item]',
+        siblingSelector: '[data-menu-item]:not([data-disabled])',
         parentSelector: '[data-menu-dropdown]',
         activateOnFocus: false,
         loop: ctx.loop,

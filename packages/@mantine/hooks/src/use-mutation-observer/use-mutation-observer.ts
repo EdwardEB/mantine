@@ -1,12 +1,12 @@
-import { RefObject, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-export function useMutationObserver<Element extends HTMLElement>(
+export function useMutationObserver<T extends HTMLElement = any>(
   callback: MutationCallback,
   options: MutationObserverInit,
   target?: HTMLElement | (() => HTMLElement) | null
 ) {
-  const observer = useRef<MutationObserver>();
-  const ref: RefObject<Element> = useRef(null);
+  const observer = useRef<MutationObserver>(null);
+  const ref = useRef<T>(null);
 
   useEffect(() => {
     const targetElement = typeof target === 'function' ? target() : target;

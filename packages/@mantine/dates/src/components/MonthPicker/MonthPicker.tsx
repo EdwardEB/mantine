@@ -26,7 +26,7 @@ export interface MonthPickerBaseProps<Type extends DatePickerType = 'default'>
   extends PickerBaseProps<Type>,
     DecadeLevelBaseSettings,
     YearLevelBaseSettings,
-    Omit<CalendarBaseProps, 'onNextMonth' | 'onPreviousMonth'> {
+    Omit<CalendarBaseProps, 'onNextMonth' | 'onPreviousMonth' | 'hasNextLevel'> {
   /** Max level that user can go up to (decade, year), defaults to decade */
   maxLevel?: MonthPickerLevel;
 
@@ -61,7 +61,9 @@ const defaultProps: Partial<MonthPickerProps> = {
 
 type MonthPickerComponent = (<Type extends DatePickerType = 'default'>(
   props: MonthPickerProps<Type> & { ref?: React.ForwardedRef<HTMLDivElement> }
-) => JSX.Element) & { displayName?: string } & MantineComponentStaticProperties<MonthPickerFactory>;
+) => React.JSX.Element) & {
+  displayName?: string;
+} & MantineComponentStaticProperties<MonthPickerFactory>;
 
 export const MonthPicker: MonthPickerComponent = factory<MonthPickerFactory>((_props, ref) => {
   const props = useProps('MonthPicker', defaultProps, _props);
@@ -125,6 +127,7 @@ export const MonthPicker: MonthPickerComponent = factory<MonthPickerFactory>((_p
       onLevelChange={onLevelChange as any}
       {...others}
       date={shiftTimezone('add', others.date, ctx.getTimezone(), __timezoneApplied)}
+      __timezoneApplied
     />
   );
 }) as any;

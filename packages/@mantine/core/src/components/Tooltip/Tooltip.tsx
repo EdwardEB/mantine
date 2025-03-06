@@ -110,6 +110,7 @@ const defaultProps: Partial<TooltipProps> = {
   events: { hover: true, focus: false, touch: false },
   zIndex: getDefaultZIndex('popover'),
   positionDependencies: [],
+  middlewares: { flip: true, shift: true, inline: false },
 };
 
 const varsResolver = createVarsResolver<TooltipFactory>((theme, { radius, color }) => ({
@@ -162,6 +163,7 @@ export const Tooltip = factory<TooltipFactory>((_props, ref) => {
     portalProps,
     mod,
     floatingStrategy,
+    middlewares,
     ...others
   } = useProps('Tooltip', defaultProps, props);
 
@@ -181,6 +183,7 @@ export const Tooltip = factory<TooltipFactory>((_props, ref) => {
     positionDependencies: [...positionDependencies!, children],
     inline,
     strategy: floatingStrategy,
+    middlewares,
   });
 
   const getStyles = useStyles<TooltipFactory>({
@@ -205,6 +208,7 @@ export const Tooltip = factory<TooltipFactory>((_props, ref) => {
 
   const targetRef = useMergedRef(tooltip.reference, getRefProp(children), ref);
   const transition = getTransitionProps(transitionProps, { duration: 100, transition: 'fade' });
+  const _childrenProps = children.props as any;
 
   return (
     <>
@@ -262,8 +266,8 @@ export const Tooltip = factory<TooltipFactory>((_props, ref) => {
           onPointerDown: props.onPointerDown,
           onPointerEnter: props.onPointerEnter,
           [refProp!]: targetRef,
-          className: cx(className, children.props.className),
-          ...children.props,
+          className: cx(className, _childrenProps.className),
+          ..._childrenProps,
         })
       )}
     </>

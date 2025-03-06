@@ -126,6 +126,13 @@ and you will be able to control arrow offset with `arrowOffset` prop. Note that 
 
 <Demo data={PopoverDemos.arrow} />
 
+## With overlay
+
+Set `withOverlay` prop to add overlay behind the dropdown. You can pass additional
+configuration to [Overlay](/core/overlay/) component with `overlayProps` prop:
+
+<Demo data={PopoverDemos.overlay} />
+
 ## Disabled
 
 Set `disabled` prop to prevent `Popover.Dropdown` from rendering:
@@ -141,6 +148,34 @@ By default, `Popover` listens to `mousedown` and `touchstart` events. You can ch
 events, for example, `mouseup` and `touchend`:
 
 <Demo data={PopoverDemos.clickOutsideEvents} />
+
+## onDismiss
+
+If you need to control opened state, but still want to close popover on outside clicks
+and escape key presses, use `onDismiss` prop:
+
+```tsx
+import { useState } from 'react';
+import { Button, Popover } from '@mantine/core';
+
+function Demo() {
+  const [opened, setOpened] = useState(false);
+  return (
+    <Popover
+      opened={opened}
+      onDismiss={() => setOpened(false)}
+    >
+      <Popover.Target>
+        <Button onClick={() => setOpened((o) => !o)}>
+          Toggle popover
+        </Button>
+      </Popover.Target>
+
+      <Popover.Dropdown>Dropdown</Popover.Dropdown>
+    </Popover>
+  );
+}
+```
 
 ## Initial focus
 

@@ -1,6 +1,7 @@
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type RefObject } from 'react';
 import { useMutationObserver, useTimeout } from '@mantine/hooks';
 import { getEnv } from '../../core';
+import { toInt } from '../ScrollArea/utils';
 
 function isParent(
   parentElement: HTMLElement | EventTarget | null,
@@ -33,7 +34,7 @@ export function useFloatingIndicator({
   ref,
   displayAfterTransitionEnd,
 }: UseFloatingIndicatorInput) {
-  const transitionTimeout = useRef<number>();
+  const transitionTimeout = useRef<number>(-1);
   const [initialized, setInitialized] = useState(false);
 
   const [hidden, setHidden] = useState(
@@ -41,25 +42,31 @@ export function useFloatingIndicator({
   );
 
   const updatePosition = () => {
-    if (!target || !parent) {
+    if (!target || !parent || !ref.current) {
       return;
     }
 
     const targetRect = target.getBoundingClientRect();
     const parentRect = parent.getBoundingClientRect();
 
+    const targetComputedStyle = window.getComputedStyle(target);
+    const parentComputedStyle = window.getComputedStyle(parent);
+
+    const borderTopWidth =
+      toInt(targetComputedStyle.borderTopWidth) + toInt(parentComputedStyle.borderTopWidth);
+    const borderLeftWidth =
+      toInt(targetComputedStyle.borderLeftWidth) + toInt(parentComputedStyle.borderLeftWidth);
+
     const position = {
-      top: targetRect.top - parentRect.top,
-      left: targetRect.left - parentRect.left,
+      top: targetRect.top - parentRect.top - borderTopWidth,
+      left: targetRect.left - parentRect.left - borderLeftWidth,
       width: targetRect.width,
       height: targetRect.height,
     };
 
-    if (ref.current) {
-      ref.current.style.transform = `translateY(${position.top}px) translateX(${position.left}px)`;
-      ref.current.style.width = `${position.width}px`;
-      ref.current.style.height = `${position.height}px`;
-    }
+    ref.current.style.transform = `translateY(${position.top}px) translateX(${position.left}px)`;
+    ref.current.style.width = `${position.width}px`;
+    ref.current.style.height = `${position.height}px`;
   };
 
   const updatePositionWithoutAnimation = () => {
@@ -75,8 +82,8 @@ export function useFloatingIndicator({
     }, 30);
   };
 
-  const targetResizeObserver = useRef<ResizeObserver>();
-  const parentResizeObserver = useRef<ResizeObserver>();
+  const targetResizeObserver = useRef<ResizeObserver>(null);
+  const parentResizeObserver = useRef<ResizeObserver>(null);
 
   useEffect(() => {
     updatePosition();

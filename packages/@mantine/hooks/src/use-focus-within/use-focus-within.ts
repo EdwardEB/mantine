@@ -16,8 +16,8 @@ function containsRelatedTarget(event: FocusEvent) {
 export function useFocusWithin<T extends HTMLElement = any>({
   onBlur,
   onFocus,
-}: UseFocusWithinOptions = {}): { ref: React.MutableRefObject<T>; focused: boolean } {
-  const ref = useRef<T>();
+}: UseFocusWithinOptions = {}): { ref: React.RefObject<T>; focused: boolean } {
+  const ref = useRef<T>(null);
   const [focused, setFocused] = useState(false);
   const focusedRef = useRef(false);
 
@@ -41,18 +41,20 @@ export function useFocusWithin<T extends HTMLElement = any>({
   };
 
   useEffect(() => {
-    if (ref.current) {
-      ref.current.addEventListener('focusin', handleFocusIn);
-      ref.current.addEventListener('focusout', handleFocusOut);
+    const node = ref.current;
+
+    if (node) {
+      node.addEventListener('focusin', handleFocusIn);
+      node.addEventListener('focusout', handleFocusOut);
 
       return () => {
-        ref.current?.removeEventListener('focusin', handleFocusIn);
-        ref.current?.removeEventListener('focusout', handleFocusOut);
+        node?.removeEventListener('focusin', handleFocusIn);
+        node?.removeEventListener('focusout', handleFocusOut);
       };
     }
 
     return undefined;
   }, [handleFocusIn, handleFocusOut]);
 
-  return { ref: ref as React.MutableRefObject<T>, focused };
+  return { ref: ref as React.RefObject<T>, focused };
 }

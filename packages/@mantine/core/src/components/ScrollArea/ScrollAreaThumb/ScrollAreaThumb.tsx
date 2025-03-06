@@ -12,7 +12,7 @@ export const Thumb = forwardRef<HTMLDivElement, ThumbProps>((props, forwardedRef
   const scrollbarContext = useScrollbarContext();
   const { onThumbPositionChange } = scrollbarContext;
   const composedRef = useMergedRef(forwardedRef, (node) => scrollbarContext.onThumbChange(node));
-  const removeUnlinkedScrollListenerRef = useRef<() => void>();
+  const removeUnlinkedScrollListenerRef = useRef<(() => void) | undefined>(undefined);
   const debounceScrollEnd = useDebouncedCallback(() => {
     if (removeUnlinkedScrollListenerRef.current) {
       removeUnlinkedScrollListenerRef.current();

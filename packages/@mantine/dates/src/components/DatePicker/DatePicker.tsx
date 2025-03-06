@@ -25,7 +25,7 @@ export interface DatePickerBaseProps<Type extends DatePickerType = 'default'>
     YearLevelBaseSettings,
     MonthLevelBaseSettings,
     CalendarBaseProps,
-    CalendarSettings {
+    Omit<CalendarSettings, 'hasNextLevel'> {
   /** Max level that user can go up to (decade, year, month), defaults to decade */
   maxLevel?: CalendarLevel;
 
@@ -59,7 +59,9 @@ const defaultProps: Partial<DatePickerProps> = {
 
 type DatePickerComponent = (<Type extends DatePickerType = 'default'>(
   props: DatePickerProps<Type> & { ref?: React.ForwardedRef<HTMLDivElement> }
-) => JSX.Element) & { displayName?: string } & MantineComponentStaticProperties<DatePickerFactory>;
+) => React.JSX.Element) & {
+  displayName?: string;
+} & MantineComponentStaticProperties<DatePickerFactory>;
 
 export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_props, ref) => {
   const props = useProps('DatePicker', defaultProps, _props);

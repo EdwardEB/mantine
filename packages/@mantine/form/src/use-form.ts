@@ -45,6 +45,7 @@ export function useForm<
   enhanceGetInputProps,
   validate: rules,
   onSubmitPreventDefault = 'always',
+  touchTrigger = 'change',
 }: UseFormInput<Values, TransformValues> = {}): UseFormReturnType<Values, TransformValues> {
   const $errors = useFormErrors<Values>(initialErrors);
   const $values = useFormValues<Values>({ initialValues, onValuesChange, mode });
@@ -53,6 +54,7 @@ export function useForm<
   const $watch = useFormWatch<Values>({ $status });
   const [formKey, setFormKey] = useState(0);
   const [fieldKeys, setFieldKeys] = useState<Record<string, number>>({});
+  const [submitting, setSubmitting] = useState(false);
 
   const reset: Reset = useCallback(() => {
     $values.resetValues();
@@ -97,7 +99,7 @@ export function useForm<
         value instanceof Function ? value(getPath(path, $values.refValues.current) as any) : value;
 
       $status.setCalculatedFieldDirty(path, resolvedValue);
-      $status.setFieldTouched(path, true);
+      touchTrigger === 'change' && $status.setFieldTouched(path, true);
       !shouldValidate && clearInputErrorOnChange && $errors.clearFieldError(path);
 
       $values.setFieldValue({
@@ -216,7 +218,15 @@ export function useForm<
 
         handleValidationFailure?.(results.errors, $values.refValues.current, event);
       } else {
-        handleSubmit?.(transformValues($values.refValues.current) as any, event);
+        const submitResult = handleSubmit?.(
+          transformValues($values.refValues.current) as any,
+          event
+        );
+
+        if (submitResult instanceof Promise) {
+          setSubmitting(true);
+          submitResult.finally(() => setSubmitting(false));
+        }
       }
     };
 
@@ -254,6 +264,9 @@ export function useForm<
     initialize,
     setValues,
     setFieldValue,
+
+    submitting,
+    setSubmitting,
 
     errors: $errors.errorsState,
     setErrors: $errors.setErrors,

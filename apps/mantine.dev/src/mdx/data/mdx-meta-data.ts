@@ -177,6 +177,30 @@ export const MDX_META_DATA: Record<string, Frontmatter> = {
     searchTags: '7-14-0, 7140',
   },
 
+  Changelog7150: {
+    title: 'Version v7.15.0',
+    slug: '/changelog/7-15-0',
+    release: 'https://github.com/mantinedev/mantine/releases/tag/7.15.0',
+    date: 'December 10th, 2024',
+    searchTags: '7-15-0, 7150',
+  },
+
+  Changelog7160: {
+    title: 'Version v7.16.0',
+    slug: '/changelog/7-16-0',
+    release: 'https://github.com/mantinedev/mantine/releases/tag/7.16.0',
+    date: 'January 14th, 2025',
+    searchTags: '7-16-0, 7160',
+  },
+
+  Changelog7170: {
+    title: 'Version v7.17.0',
+    slug: '/changelog/7-17-0',
+    release: 'https://github.com/mantinedev/mantine/releases/tag/7.17.0',
+    date: 'February 18th, 2025',
+    searchTags: '7-17-0, 7170',
+  },
+
   PreviousChangelogs: {
     title: 'All releases',
     slug: '/changelog/previous-versions',

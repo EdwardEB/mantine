@@ -2,9 +2,12 @@ import dayjs from 'dayjs';
 import {
   Box,
   BoxProps,
+  createVarsResolver,
   ElementProps,
   factory,
   Factory,
+  getFontSize,
+  getSize,
   MantineSize,
   StylesApiProps,
   useProps,
@@ -17,9 +20,9 @@ import { Day, DayProps, DayStylesNames } from '../Day';
 import { WeekdaysRow } from '../WeekdaysRow';
 import { getDateInTabOrder } from './get-date-in-tab-order/get-date-in-tab-order';
 import { getMonthDays } from './get-month-days/get-month-days';
+import { getWeekNumber } from './get-week-number/get-week-number';
 import { isAfterMinDate } from './is-after-min-date/is-after-min-date';
 import { isBeforeMaxDate } from './is-before-max-date/is-before-max-date';
-import { isSameMonth } from './is-same-month/is-same-month';
 import classes from './Month.module.css';
 
 export type MonthStylesNames =
@@ -31,6 +34,7 @@ export type MonthStylesNames =
   | 'monthThead'
   | 'monthTbody'
   | 'monthCell'
+  | 'weekNumber'
   | DayStylesNames;
 
 export interface MonthSettings {
@@ -99,6 +103,9 @@ export interface MonthSettings {
 
   /** Determines whether today should be highlighted with a border, `false` by default */
   highlightToday?: boolean;
+
+  /** Determines whether week numbers should be displayed */
+  withWeekNumbers?: boolean;
 }
 
 export interface MonthProps
@@ -124,6 +131,13 @@ export type MonthFactory = Factory<{
 const defaultProps: Partial<MonthProps> = {
   withCellSpacing: true,
 };
+
+const varsResolver = createVarsResolver<MonthFactory>((_, { size }) => ({
+  weekNumber: {
+    '--wn-fz': getFontSize(size),
+    '--wn-size': getSize(size, 'wn-size'),
+  },
+}));
 
 export const Month = factory<MonthFactory>((_props, ref) => {
   const props = useProps('Month', defaultProps, _props);
@@ -158,6 +172,7 @@ export const Month = factory<MonthFactory>((_props, ref) => {
     withCellSpacing,
     size,
     highlightToday,
+    withWeekNumbers,
     ...others
   } = props;
 
@@ -171,6 +186,7 @@ export const Month = factory<MonthFactory>((_props, ref) => {
     styles,
     unstyled,
     vars,
+    varsResolver,
     rootSelector: 'month',
   });
 
@@ -199,7 +215,7 @@ export const Month = factory<MonthFactory>((_props, ref) => {
 
   const rows = dates.map((row, rowIndex) => {
     const cells = row.map((date, cellIndex) => {
-      const outside = !isSameMonth(date, month);
+      const outside = !dayjs(date).isSame(dayjs(month), 'month');
       const ariaLabel =
         getDayAriaLabel?.(date) ||
         dayjs(date)
@@ -261,6 +277,7 @@ export const Month = factory<MonthFactory>((_props, ref) => {
 
     return (
       <tr key={rowIndex} {...getStyles('monthRow')}>
+        {withWeekNumbers && <td {...getStyles('weekNumber')}>{getWeekNumber(row)}</td>}
         {cells}
       </tr>
     );
@@ -279,6 +296,7 @@ export const Month = factory<MonthFactory>((_props, ref) => {
             classNames={resolvedClassNames}
             styles={resolvedStyles}
             unstyled={unstyled}
+            withWeekNumbers={withWeekNumbers}
           />
         </thead>
       )}

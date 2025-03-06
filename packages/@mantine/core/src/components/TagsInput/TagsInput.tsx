@@ -11,7 +11,6 @@ import {
   useResolvedStylesApi,
   useStyles,
 } from '../../core';
-import { __CloseButtonProps } from '../CloseButton';
 import {
   Combobox,
   ComboboxLikeProps,
@@ -24,7 +23,7 @@ import {
   OptionsDropdown,
   useCombobox,
 } from '../Combobox';
-import { __BaseInputProps, __InputStylesNames } from '../Input';
+import { __BaseInputProps, __InputStylesNames, InputClearButtonProps } from '../Input';
 import { InputBase } from '../InputBase';
 import { Pill } from '../Pill';
 import { PillsInput } from '../PillsInput';
@@ -45,7 +44,7 @@ export interface TagsInputProps
     Omit<ComboboxLikeProps, 'data'>,
     StylesApiProps<TagsInputFactory>,
     ElementProps<'input', 'size' | 'value' | 'defaultValue' | 'onChange'> {
-  /** Data displayed in the dropdown */
+  /** Data displayed in the dropdown. Values must be unique, otherwise an error will be thrown and component will not render. */
   data?: ComboboxStringData;
 
   /** Controlled component value */
@@ -88,7 +87,7 @@ export interface TagsInputProps
   clearable?: boolean;
 
   /** Props passed down to the clear button */
-  clearButtonProps?: __CloseButtonProps & ElementProps<'button'>;
+  clearButtonProps?: InputClearButtonProps & ElementProps<'button'>;
 
   /** Props passed down to the hidden input */
   hiddenInputProps?: Omit<React.ComponentPropsWithoutRef<'input'>, 'value'>;
@@ -354,9 +353,8 @@ export const TagsInput = factory<TagsInputFactory>((_props, ref) => {
     }
   }, [selectFirstOptionOnChange, _value, _searchValue]);
 
-  const clearButton = clearable && _value.length > 0 && !disabled && !readOnly && (
+  const clearButton = (
     <Combobox.ClearButton
-      size={size as string}
       {...clearButtonProps}
       onClear={() => {
         setValue([]);
@@ -400,7 +398,9 @@ export const TagsInput = factory<TagsInputFactory>((_props, ref) => {
             variant={variant}
             disabled={disabled}
             radius={radius}
-            rightSection={rightSection || clearButton}
+            rightSection={rightSection}
+            __clearSection={clearButton}
+            __clearable={clearable && _value.length > 0 && !disabled && !readOnly}
             rightSectionWidth={rightSectionWidth}
             rightSectionPointerEvents={rightSectionPointerEvents}
             rightSectionProps={rightSectionProps}

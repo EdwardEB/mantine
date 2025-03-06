@@ -6,12 +6,12 @@ import {
   extractStyleProps,
   factory,
   Factory,
+  MantineColor,
   StylesApiProps,
   useProps,
   useResolvedStylesApi,
   useStyles,
 } from '../../core';
-import { __CloseButtonProps } from '../CloseButton';
 import {
   Combobox,
   ComboboxItem,
@@ -23,7 +23,7 @@ import {
   OptionsDropdown,
   useCombobox,
 } from '../Combobox';
-import { __BaseInputProps, __InputStylesNames } from '../Input';
+import { __BaseInputProps, __InputStylesNames, InputClearButtonProps } from '../Input';
 import { InputBase } from '../InputBase';
 import { Pill } from '../Pill';
 import { PillsInput } from '../PillsInput';
@@ -89,7 +89,7 @@ export interface MultiSelectProps
   clearable?: boolean;
 
   /** Props passed down to the clear button */
-  clearButtonProps?: __CloseButtonProps & ElementProps<'button'>;
+  clearButtonProps?: InputClearButtonProps & ElementProps<'button'>;
 
   /** Props passed down to the hidden input */
   hiddenInputProps?: Omit<React.ComponentPropsWithoutRef<'input'>, 'value'>;
@@ -102,6 +102,9 @@ export interface MultiSelectProps
 
   /** Props passed down to the underlying `ScrollArea` component in the dropdown */
   scrollAreaProps?: ScrollAreaProps;
+
+  /** Controls color of the default chevron, by default depends on the color scheme */
+  chevronColor?: MantineColor;
 }
 
 export type MultiSelectFactory = Factory<{
@@ -192,6 +195,7 @@ export const MultiSelect = factory<MultiSelectFactory>((_props, ref) => {
     onRemove,
     onClear,
     scrollAreaProps,
+    chevronColor,
     ...others
   } = props;
 
@@ -279,9 +283,8 @@ export const MultiSelect = factory<MultiSelectFactory>((_props, ref) => {
     }
   }, [selectFirstOptionOnChange, _value]);
 
-  const clearButton = clearable && _value.length > 0 && !disabled && !readOnly && (
+  const clearButton = (
     <Combobox.ClearButton
-      size={size as string}
       {...clearButtonProps}
       onClear={() => {
         onClear?.();
@@ -292,6 +295,7 @@ export const MultiSelect = factory<MultiSelectFactory>((_props, ref) => {
   );
 
   const filteredData = filterPickedValues({ data: parsedData, value: _value });
+  const _clearable = clearable && _value.length > 0 && !disabled && !readOnly;
 
   return (
     <>
@@ -330,10 +334,17 @@ export const MultiSelect = factory<MultiSelectFactory>((_props, ref) => {
             variant={variant}
             disabled={disabled}
             radius={radius}
-            rightSection={
-              rightSection ||
-              clearButton || <Combobox.Chevron size={size} error={error} unstyled={unstyled} />
+            __defaultRightSection={
+              <Combobox.Chevron
+                size={size}
+                error={error}
+                unstyled={unstyled}
+                color={chevronColor}
+              />
             }
+            __clearSection={clearButton}
+            __clearable={_clearable}
+            rightSection={rightSection}
             rightSectionPointerEvents={rightSectionPointerEvents || (clearButton ? 'all' : 'none')}
             rightSectionWidth={rightSectionWidth}
             rightSectionProps={rightSectionProps}
@@ -355,8 +366,7 @@ export const MultiSelect = factory<MultiSelectFactory>((_props, ref) => {
             withErrorStyles={withErrorStyles}
             __stylesApiProps={{
               ...props,
-              rightSectionPointerEvents:
-                rightSectionPointerEvents || (clearButton ? 'all' : 'none'),
+              rightSectionPointerEvents: rightSectionPointerEvents || (_clearable ? 'all' : 'none'),
               multiline: true,
             }}
             pointer={!searchable}

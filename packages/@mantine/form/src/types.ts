@@ -1,3 +1,5 @@
+import type { formRootRule } from './validate/validate-values';
+
 export type GetInputPropsType = 'input' | 'checkbox';
 export type FormMode = 'controlled' | 'uncontrolled';
 
@@ -22,14 +24,18 @@ export interface ReorderPayload {
 
 type Rule<Value, Values> = (value: Value, values: Values, path: string) => React.ReactNode;
 
+type SetSubmitting = React.Dispatch<React.SetStateAction<boolean>>;
+
 export type FormRule<Value, Values> =
   NonNullable<Value> extends Array<infer ListValue>
     ?
-        | Partial<{
-            [Key in keyof ListValue]: ListValue[Key] extends Array<infer NestedListItem>
-              ? FormRulesRecord<NestedListItem, Values> | Rule<ListValue[Key], Values>
-              : FormRulesRecord<ListValue[Key], Values> | Rule<ListValue[Key], Values>;
-          }>
+        | Partial<
+            {
+              [Key in keyof ListValue]: ListValue[Key] extends Array<infer NestedListItem>
+                ? FormRulesRecord<NestedListItem, Values> | Rule<ListValue[Key], Values>
+                : FormRulesRecord<ListValue[Key], Values> | Rule<ListValue[Key], Values>;
+            } & { [formRootRule]?: Rule<Value, Values> }
+          >
         | Rule<Value, Values>
     : NonNullable<Value> extends Record<string, any>
       ? FormRulesRecord<Value, Values> | Rule<Value, Values>
@@ -37,7 +43,7 @@ export type FormRule<Value, Values> =
 
 export type FormRulesRecord<Values, InitValues = Values> = Partial<{
   [Key in keyof Values]: FormRule<Values[Key], InitValues>;
-}>;
+}> & { [formRootRule]?: Rule<Values, InitValues> };
 
 export type FormValidateInput<Values> = FormRulesRecord<Values> | ((values: Values) => FormErrors);
 
@@ -52,7 +58,7 @@ export type OnSubmit<Values, TransformValues extends _TransformValues<Values>> =
   handleSubmit: (
     values: ReturnType<TransformValues>,
     event: React.FormEvent<HTMLFormElement> | undefined
-  ) => void,
+  ) => void | Promise<any>,
   handleValidationFailure?: (
     errors: FormErrors,
     values: Values,
@@ -207,6 +213,7 @@ export interface UseFormInput<
     form: UseFormReturnType<Values, TransformValues>;
   }) => Record<string, any> | undefined | void;
   onSubmitPreventDefault?: 'always' | 'never' | 'validation-failed';
+  touchTrigger?: 'focus' | 'change';
 }
 
 export interface UseFormReturnType<
@@ -214,8 +221,10 @@ export interface UseFormReturnType<
   TransformValues extends _TransformValues<Values> = (values: Values) => Values,
 > {
   values: Values;
+  submitting: boolean;
   initialized: boolean;
   errors: FormErrors;
+  setSubmitting: SetSubmitting;
   initialize: Initialize<Values>;
   setValues: SetValues<Values>;
   setInitialValues: SetInitialValues<Values>;

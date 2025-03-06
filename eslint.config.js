@@ -13,7 +13,6 @@ module.exports = tseslint.config(
   },
   { ignores: ['**/*.{mjs,cjs,js,d.ts,d.mts}'] },
   {
-    // Jest specific rules
     plugins: { jest },
     rules: {
       ...jest.configs['flat/recommended'].rules,
@@ -21,6 +20,11 @@ module.exports = tseslint.config(
       'jest/expect-expect': 'off',
       'jest/valid-title': 'off',
       '@typescript-eslint/no-namespace': 'off',
+      'no-console': 'error',
     },
+  },
+  {
+    files: ['**/*.story.tsx'],
+    rules: { 'no-console': 'off' },
   }
 );
