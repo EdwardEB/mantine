@@ -1,30 +1,30 @@
 .paragraph {
   line-height: 1.65;
-  font-size: 15px;
+  font-size: var(--docs-font-size);
 }
 
 .link {
-  font-size: 15px;
+  font-size: var(--docs-font-size);
 }
 
 .ul {
   line-height: 1.65;
   margin-bottom: 20px;
   margin-top: 10px;
-  font-size: 15px;
+  font-size: var(--docs-font-size);
   padding-left: var(--mantine-spacing-xl);
 }
 
 .li {
   margin-top: 4px;
-  font-size: 15px;
+  font-size: var(--docs-font-size);
 }
 
 .title {
   margin-top: calc(var(--mantine-spacing-xl) * 1.2);
   margin-bottom: var(--mantine-spacing-md);
   word-break: break-word;
-  font-weight: 700;
+  font-weight: 500;
 
   @mixin light {
     color: var(--mantine-color-black);
@@ -46,18 +46,11 @@
 }
 
 .code {
-  border: 1px solid;
   border-radius: var(--mantine-radius-md);
   margin-top: var(--mantine-spacing-md);
   margin-bottom: var(--mantine-spacing-md);
-  overflow: hidden;
-  max-width: 100%;
 
-  @mixin light {
-    border-color: var(--mantine-color-gray-2);
-  }
-
-  @mixin dark {
-    border-color: var(--mantine-color-dark-5);
+  & pre {
+    border-radius: var(--mantine-radius-md);
   }
 }

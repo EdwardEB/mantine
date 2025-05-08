@@ -147,7 +147,7 @@ To customize theme, pass theme override object to [MantineProvider](/theming/man
 Theme override will be deeply merged with the default theme.
 
 ```tsx
-import { createTheme, MantineProvider, rem } from '@mantine/core';
+import { createTheme, MantineProvider } from '@mantine/core';
 
 const theme = createTheme({
   colors: {
@@ -187,7 +187,7 @@ const theme = createTheme({
   headings: {
     fontFamily: 'Roboto, sans-serif',
     sizes: {
-      h1: { fontSize: rem(36) },
+      h1: { fontSize: 36 },
     },
   },
 });
@@ -404,8 +404,7 @@ function Demo() {
 You can import default theme object from `@mantine/core` package. It includes
 all theme properties with default values. When you pass theme override to
 [MantineProvider](/theming/mantine-provider), it will be deeply merged with
-the default theme. You can find contents of `DEFAULT_THEME` object
-on [this page](/theming/default-theme).
+the default theme.
 
 ```tsx
 import { DEFAULT_THEME } from '@mantine/core';

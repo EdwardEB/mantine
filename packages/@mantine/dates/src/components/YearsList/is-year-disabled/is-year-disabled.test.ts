@@ -2,28 +2,38 @@ import { isYearDisabled } from './is-year-disabled';
 
 describe('@mantine/dates/is-year-disabled', () => {
   it('detects that date is disabled if it is before minDate', () => {
-    expect(isYearDisabled(new Date(2022, 1, 3), new Date(2023, 2, 3), null)).toBe(true);
-    expect(isYearDisabled(new Date(2022, 1, 3), new Date(2022, 1, 3), null)).toBe(false);
-    expect(isYearDisabled(new Date(2022, 1, 3), new Date(2021, 2, 3), null)).toBe(false);
+    expect(isYearDisabled({ year: '2022-02-03', minDate: '2023-03-03', maxDate: undefined })).toBe(
+      true
+    );
+    expect(isYearDisabled({ year: '2022-02-03', minDate: '2022-02-03', maxDate: undefined })).toBe(
+      false
+    );
+    expect(isYearDisabled({ year: '2022-02-03', minDate: '2021-03-03', maxDate: undefined })).toBe(
+      false
+    );
   });
 
   it('detects that date is disabled if it is after maxDate', () => {
-    expect(isYearDisabled(new Date(2022, 1, 3), null, new Date(2021, 2, 3))).toBe(true);
-    expect(isYearDisabled(new Date(2022, 1, 3), null, new Date(2022, 1, 2))).toBe(false);
-    expect(isYearDisabled(new Date(2022, 1, 3), null, new Date(2024, 1, 2))).toBe(false);
-  });
-
-  it('correctly detects valid dates withing minDate and maxDate boundaries', () => {
-    expect(isYearDisabled(new Date(2022, 1, 3), new Date(2020, 1, 3), new Date(2023, 2, 3))).toBe(
+    expect(isYearDisabled({ year: '2022-02-03', minDate: undefined, maxDate: '2021-03-03' })).toBe(
+      true
+    );
+    expect(isYearDisabled({ year: '2022-02-03', minDate: undefined, maxDate: '2022-02-02' })).toBe(
       false
     );
-
-    expect(isYearDisabled(new Date(2019, 1, 3), new Date(2020, 1, 3), new Date(2023, 2, 3))).toBe(
-      true
+    expect(isYearDisabled({ year: '2022-02-03', minDate: undefined, maxDate: '2024-02-02' })).toBe(
+      false
     );
+  });
 
-    expect(isYearDisabled(new Date(2024, 1, 3), new Date(2020, 1, 3), new Date(2023, 2, 3))).toBe(
-      true
-    );
+  it('correctly detects valid dates within minDate and maxDate boundaries', () => {
+    expect(
+      isYearDisabled({ year: '2022-02-03', minDate: '2020-02-03', maxDate: '2023-03-03' })
+    ).toBe(false);
+    expect(
+      isYearDisabled({ year: '2019-02-03', minDate: '2020-02-03', maxDate: '2023-03-03' })
+    ).toBe(true);
+    expect(
+      isYearDisabled({ year: '2024-02-03', minDate: '2020-02-03', maxDate: '2023-03-03' })
+    ).toBe(true);
   });
 });

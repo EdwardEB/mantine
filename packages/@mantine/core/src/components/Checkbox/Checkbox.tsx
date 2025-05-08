@@ -4,6 +4,7 @@ import {
   Box,
   BoxProps,
   createVarsResolver,
+  DataAttributes,
   ElementProps,
   extractStyleProps,
   factory,
@@ -55,7 +56,7 @@ export interface CheckboxProps
   radius?: MantineRadius;
 
   /** Props passed down to the root element */
-  wrapperProps?: Record<string, any>;
+  wrapperProps?: React.ComponentPropsWithoutRef<'div'> & DataAttributes;
 
   /** Position of the label relative to the input, `'right'` by default */
   labelPosition?: 'left' | 'right';

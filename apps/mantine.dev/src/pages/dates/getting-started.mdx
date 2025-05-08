@@ -17,6 +17,17 @@ After installation import package styles at the root of your application:
 import '@mantine/dates/styles.css';
 ```
 
+## Do not forget to import styles
+
+Followed installation instructions above but something is not working
+(calendars and date pickers have no styles and look broken)?
+You've fallen into the trap of not importing dates styles!
+To fix the issue, import dates styles at the root of your application:
+
+```tsx
+import '@mantine/dates/styles.css';
+```
+
 ## Usage
 
 After installing `@mantine/dates` package and importing styles, you can use all components from it:
@@ -28,6 +39,18 @@ After installing `@mantine/dates` package and importing styles, you can use all 
 `@mantine/dates` components use [dayjs](https://day.js.org/) under the hood for date manipulations and formatting.
 dayjs is a required dependency – you cannot change it to another date library. If you want to use a different
 date library in your application, you will need to install it separately.
+
+## DatesProvider
+
+`DatesProvider` component lets you set various settings that are shared across all
+components exported from `@mantine/dates` package. `DatesProvider` supports the following settings:
+
+- `locale` – dayjs locale, note that you also need to import corresponding locale module from dayjs. Default value is `en`.
+- `firstDayOfWeek` – number from 0 to 6, where 0 is Sunday and 6 is Saturday. Default value is 1 – Monday.
+- `weekendDays` – an array of numbers from 0 to 6, where 0 is Sunday and 6 is Saturday. Default value is `[0, 6]` – Saturday and Sunday.
+- `consistentWeeks` – boolean, if `true` every month will have 6 weeks. Default value is `false`.
+
+<Demo data={DatesProviderDemos.usage} />
 
 ## Consistent weeks
 
@@ -52,7 +75,7 @@ dayjs.extend(customParseFormat);
 ## Localization and server components
 
 To add localization you must import `import 'dayjs/locale/x';` in your application (`x` is locale name)
-and set `locale` either on [DatesProvider](/dates/dates-provider) or on each component individually.
+and set `locale` either on `DatesProvider` or on each component individually.
 
 Example of setting locale on DatesProvider:
 

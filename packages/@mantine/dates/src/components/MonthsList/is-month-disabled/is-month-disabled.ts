@@ -1,10 +1,13 @@
 import dayjs from 'dayjs';
+import { DateStringValue } from '../../../types';
 
-export function isMonthDisabled(
-  month: Date,
-  minDate: Date | null | undefined,
-  maxDate: Date | null | undefined
-) {
+interface IsMonthDisabledInput {
+  month: DateStringValue;
+  minDate: DateStringValue | undefined;
+  maxDate: DateStringValue | undefined;
+}
+
+export function isMonthDisabled({ month, minDate, maxDate }: IsMonthDisabledInput): boolean {
   if (!minDate && !maxDate) {
     return false;
   }

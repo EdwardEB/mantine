@@ -25,18 +25,18 @@ export const MDX_META_DATA: Record<string, Frontmatter> = {
     hideHeader: true,
   },
 
-  TemplatesUsage: {
-    title: 'Getting started with a template',
-    slug: '/templates-usage',
+  Support: {
+    title: 'Support',
+    slug: '/support',
     hideInSearch: true,
     hideSiblings: true,
     hideHeader: true,
   },
 
-  Overview: {
-    title: 'Mantine API overview',
-    slug: '/overview',
-    search: 'Overview of Mantine components API',
+  BrowserSupport: {
+    title: 'Browser support',
+    slug: '/browser-support',
+    search: 'Browser versions supported by Mantine',
     hideSiblings: true,
     hideHeader: true,
   },
@@ -49,10 +49,10 @@ export const MDX_META_DATA: Record<string, Frontmatter> = {
     hideHeader: true,
   },
 
-  SubmitTemplate: {
-    title: 'Submit a template',
-    slug: '/submit-template',
-    search: 'Learn how to submit a template',
+  EslintConfig: {
+    title: 'eslint-config-mantine',
+    slug: '/eslint-config-mantine',
+    search: 'Linting configuration for Mantine projects',
     hideSiblings: true,
     hideHeader: true,
   },
@@ -199,6 +199,14 @@ export const MDX_META_DATA: Record<string, Frontmatter> = {
     release: 'https://github.com/mantinedev/mantine/releases/tag/7.17.0',
     date: 'February 18th, 2025',
     searchTags: '7-17-0, 7170',
+  },
+
+  Changelog800: {
+    title: 'Version v8.0.0',
+    slug: '/changelog/8-0-0',
+    release: 'https://github.com/mantinedev/mantine/releases/tag/8.0.0',
+    date: 'May 5th, 2025',
+    searchTags: '8-0-0, 800',
   },
 
   PreviousChangelogs: {

@@ -14,15 +14,17 @@ import {
   useResolvedStylesApi,
   useStyles,
 } from '@mantine/core';
-import { ControlKeydownPayload, DayOfWeek } from '../../types';
+import { ControlKeydownPayload, DateLabelFormat, DateStringValue, DayOfWeek } from '../../types';
+import { toDateString } from '../../utils';
 import { useDatesContext } from '../DatesProvider';
-import { Day, DayProps, DayStylesNames } from '../Day';
+import { Day, DayProps, DayStylesNames, RenderDay } from '../Day';
 import { WeekdaysRow } from '../WeekdaysRow';
 import { getDateInTabOrder } from './get-date-in-tab-order/get-date-in-tab-order';
 import { getMonthDays } from './get-month-days/get-month-days';
 import { getWeekNumber } from './get-week-number/get-week-number';
 import { isAfterMinDate } from './is-after-min-date/is-after-min-date';
 import { isBeforeMaxDate } from './is-before-max-date/is-before-max-date';
+import { isSameMonth } from './is-same-month/is-same-month';
 import classes from './Month.module.css';
 
 export type MonthStylesNames =
@@ -45,10 +47,10 @@ export interface MonthSettings {
   __preventFocus?: boolean;
 
   /** Called when day is clicked with click event and date */
-  __onDayClick?: (event: React.MouseEvent<HTMLButtonElement>, date: Date) => void;
+  __onDayClick?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 
   /** Called when mouse enters day */
-  __onDayMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: Date) => void;
+  __onDayMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 
   /** Called when any keydown event is registered on day, used for arrows navigation */
   __onDayKeyDown?: (
@@ -59,52 +61,54 @@ export interface MonthSettings {
   /** Assigns ref of every day based on its position in the table, used for arrows navigation */
   __getDayRef?: (rowIndex: number, cellIndex: number, node: HTMLButtonElement) => void;
 
-  /** Dayjs locale, defaults to value defined in DatesProvider */
+  /** dayjs locale, the default value is defined by `DatesProvider` */
   locale?: string;
 
-  /** Number 0-6, 0 – Sunday, 6 – Saturday, defaults to 1 – Monday */
+  /** Number 0-6, where 0 – Sunday and 6 – Saturday. 1 – Monday by default */
   firstDayOfWeek?: DayOfWeek;
 
-  /** Dayjs format for weekdays names, defaults to "dd" */
-  weekdayFormat?: string | ((date: Date) => React.ReactNode);
+  /** dayjs format for weekdays names, `'dd'` by default */
+  weekdayFormat?: DateLabelFormat;
 
-  /** Indices of weekend days, 0-6, where 0 is Sunday and 6 is Saturday, defaults to value defined in DatesProvider */
+  /** Indices of weekend days, 0-6, where 0 is Sunday and 6 is Saturday. The default value is defined by `DatesProvider` */
   weekendDays?: DayOfWeek[];
 
-  /** Adds props to Day component based on date */
-  getDayProps?: (date: Date) => Omit<Partial<DayProps>, 'classNames' | 'styles' | 'vars'>;
+  /** Passes props down to `Day` components */
+  getDayProps?: (
+    date: DateStringValue
+  ) => Omit<Partial<DayProps>, 'classNames' | 'styles' | 'vars'>;
 
   /** Callback function to determine whether the day should be disabled */
-  excludeDate?: (date: Date) => boolean;
+  excludeDate?: (date: DateStringValue) => boolean;
 
-  /** Minimum possible date */
-  minDate?: Date;
+  /** Minimum possible date, in `YYYY-MM-DD` format */
+  minDate?: DateStringValue | Date;
 
-  /** Maximum possible date */
-  maxDate?: Date;
+  /** Maximum possible date, in `YYYY-MM-DD` format */
+  maxDate?: DateStringValue | Date;
 
   /** Controls day value rendering */
-  renderDay?: (date: Date) => React.ReactNode;
+  renderDay?: RenderDay;
 
-  /** Determines whether outside dates should be hidden, defaults to false */
+  /** Determines whether outside dates should be hidden, `false` by default */
   hideOutsideDates?: boolean;
 
-  /** Determines whether weekdays row should be hidden, defaults to false */
+  /** Determines whether weekdays row should be hidden, `false` by default */
   hideWeekdays?: boolean;
 
-  /** Assigns aria-label to days based on date */
-  getDayAriaLabel?: (date: Date) => string;
+  /** Assigns `aria-label` to `Day` components based on date */
+  getDayAriaLabel?: (date: DateStringValue) => string;
 
   /** Controls size */
   size?: MantineSize;
 
-  /** Determines whether controls should be separated by spacing, true by default */
+  /** Determines whether controls should be separated by space, `true` by default */
   withCellSpacing?: boolean;
 
   /** Determines whether today should be highlighted with a border, `false` by default */
   highlightToday?: boolean;
 
-  /** Determines whether week numbers should be displayed */
+  /** Determines whether week numbers should be displayed, `false` by default */
   withWeekNumbers?: boolean;
 }
 
@@ -115,8 +119,8 @@ export interface MonthProps
     ElementProps<'div'> {
   __staticSelector?: string;
 
-  /** Month to display */
-  month: Date;
+  /** Month to display, value `YYYY-MM-DD` */
+  month: DateStringValue;
 
   /** Determines whether days should be static, static days can be used to display month if it is not expected that user will interact with the component in any way  */
   static?: boolean;
@@ -197,15 +201,15 @@ export const Month = factory<MonthFactory>((_props, ref) => {
     consistentWeeks: ctx.consistentWeeks,
   });
 
-  const dateInTabOrder = getDateInTabOrder(
+  const dateInTabOrder = getDateInTabOrder({
     dates,
-    minDate,
-    maxDate,
+    minDate: toDateString(minDate) as DateStringValue,
+    maxDate: toDateString(maxDate) as DateStringValue,
     getDayProps,
     excludeDate,
     hideOutsideDates,
-    month
-  );
+    month,
+  });
 
   const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<MonthFactory>({
     classNames,
@@ -215,7 +219,7 @@ export const Month = factory<MonthFactory>((_props, ref) => {
 
   const rows = dates.map((row, rowIndex) => {
     const cells = row.map((date, cellIndex) => {
-      const outside = !dayjs(date).isSame(dayjs(month), 'month');
+      const outside = !isSameMonth(date, month);
       const ariaLabel =
         getDayAriaLabel?.(date) ||
         dayjs(date)
@@ -240,15 +244,15 @@ export const Month = factory<MonthFactory>((_props, ref) => {
             renderDay={renderDay}
             date={date}
             size={size}
-            weekend={ctx.getWeekendDays(weekendDays).includes(date.getDay() as DayOfWeek)}
+            weekend={ctx.getWeekendDays(weekendDays).includes(dayjs(date).get('day') as DayOfWeek)}
             outside={outside}
             hidden={hideOutsideDates ? outside : false}
             aria-label={ariaLabel}
             static={isStatic}
             disabled={
               excludeDate?.(date) ||
-              !isBeforeMaxDate(date, maxDate) ||
-              !isAfterMinDate(date, minDate)
+              !isBeforeMaxDate(date, toDateString(maxDate)!) ||
+              !isAfterMinDate(date, toDateString(minDate)!)
             }
             ref={(node) => __getDayRef?.(rowIndex, cellIndex, node!)}
             {...dayProps}

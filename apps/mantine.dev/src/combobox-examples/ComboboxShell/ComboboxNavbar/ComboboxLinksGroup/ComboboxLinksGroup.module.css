@@ -14,26 +14,14 @@
   width: 100%;
   height: 32px;
   cursor: pointer;
-
-  @mixin light {
-    color: var(--mantine-color-gray-7);
-  }
-
-  @mixin dark {
-    color: var(--mantine-color-white);
-  }
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-white));
 }
 
 .chevron {
   width: 15px;
   height: 15px;
-  margin-right: var(--mantine-spacing-md);
+  margin-inline-end: var(--mantine-spacing-md);
   transition: transform 150ms ease;
-
-  @mixin rtl {
-    margin-right: 0;
-    margin-left: var(--mantine-spacing-md);
-  }
 
   &[data-collapsed] {
     transform: rotate(-90deg);
@@ -67,46 +55,23 @@
   font-size: var(--mantine-font-size-sm);
   user-select: none;
   text-decoration: none;
+  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
 
   @mixin hover {
     background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
   }
 
-  @mixin light {
-    color: var(--mantine-color-gray-7);
-  }
-
-  @mixin dark {
-    color: var(--mantine-color-dark-1);
-  }
-
-  @mixin rtl {
-    padding-left: var(--mantine-spacing-md);
-    padding-right: 23px;
-    border-left: 0;
-    border-right: 1px solid var(--border-color);
-    margin-left: 0;
-    margin-right: 7px;
-    border-radius: 0;
-    border-top-left-radius: var(--mantine-radius-sm);
-    border-bottom-left-radius: var(--mantine-radius-sm);
-  }
-
   &[data-navbar-link-active] {
-    border-color: var(--mantine-color-blue-5) !important;
-
-    @mixin light {
-      color: var(--mantine-color-blue-8);
-      background-color: var(--mantine-color-blue-0);
-    }
-
-    @mixin dark {
-      color: var(--mantine-color-blue-1);
-      background-color: rgba(24, 100, 171, 0.45);
-    }
+    border-color: var(--mantine-color-blue-6);
+    color: light-dark(var(--mantine-color-blue-7), var(--mantine-color-blue-2));
+    background-color: var(--mantine-color-blue-light);
 
     & .linkTitle {
       font-weight: 500;
+    }
+
+    & .linkDescription {
+      color: light-dark(var(--mantine-color-blue-7), var(--mantine-color-blue-2));
     }
   }
 }
@@ -117,7 +82,7 @@
 
 .linkDescription {
   font-size: var(--mantine-font-size-xs);
-  opacity: 0.6;
   margin-top: 4px;
   line-height: 1.4;
+  color: var(--mantine-color-dimmed);
 }

@@ -1,5 +1,4 @@
 import { cloneElement, useState } from 'react';
-import { Stack } from '@mantine/core';
 import { DemoAreaProps } from '../DemoArea';
 import { DemoCode } from '../DemoCode';
 import { DemoColumns } from '../DemoColumns';
@@ -21,7 +20,6 @@ import {
   ConfiguratorStringControlOptions,
 } from './controls';
 import { Code, getCodeArray } from './get-code-array';
-import classes from './ConfiguratorDemo.module.css';
 
 const ControlComponents = {
   boolean: ConfiguratorBooleanControl,
@@ -57,6 +55,7 @@ export function ConfiguratorDemo({
   withPadding,
   dimmed,
   striped,
+  overflow,
 }: ConfiguratorDemoProps) {
   const initialState = controls.reduce<Record<string, any>>((acc, control) => {
     acc[control.prop] = control.initialValue;
@@ -83,17 +82,15 @@ export function ConfiguratorDemo({
   return (
     <DemoRoot>
       <DemoColumns
-        controls={
-          <Stack className={classes.controls} gap="sm">
-            {items}
-          </Stack>
-        }
+        controls={items}
         centered={centered}
         withPadding={withPadding}
         maxWidth={maxWidth}
         minHeight={minHeight}
         dimmed={dimmed}
         striped={striped}
+        overflow={overflow}
+        withGrid
       >
         {cloneElement(children as React.JSX.Element, state)}
       </DemoColumns>

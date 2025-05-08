@@ -1,6 +1,21 @@
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { Button, Group } from '@mantine/core';
+import {
+  Autocomplete,
+  Button,
+  Checkbox,
+  ColorInput,
+  Group,
+  Input,
+  MultiSelect,
+  NumberInput,
+  Radio,
+  RangeSlider,
+  Select,
+  SimpleGrid,
+  Slider,
+  Stack,
+} from '@mantine/core';
 import { DatesProvider } from '../DatesProvider';
 import { DatePickerInput } from './DatePickerInput';
 
@@ -9,7 +24,7 @@ export default { title: 'DatePickerInput' };
 export function Usage() {
   return (
     <div style={{ padding: 40, maxWidth: 400 }}>
-      <DatePickerInput placeholder="Date picker input" highlightToday />
+      <DatePickerInput placeholder="Date picker input" />
     </div>
   );
 }
@@ -31,11 +46,7 @@ export function Unstyled() {
 export function MaxDateBeforeToday() {
   return (
     <div style={{ padding: 40, maxWidth: 400 }}>
-      <DatePickerInput
-        label="Date picker input"
-        placeholder="Pick date"
-        maxDate={new Date(2020, 0, 11)}
-      />
+      <DatePickerInput label="Date picker input" placeholder="Pick date" maxDate="2020-01-11" />
     </div>
   );
 }
@@ -43,18 +54,13 @@ export function MaxDateBeforeToday() {
 export function MinDateBeforeToday() {
   return (
     <div style={{ padding: 40, maxWidth: 400 }}>
-      <DatePickerInput
-        label="Date picker input"
-        placeholder="Pick date"
-        minDate={new Date(2028, 0, 11)}
-      />
+      <DatePickerInput label="Date picker input" placeholder="Pick date" minDate="2028-01-11" />
     </div>
   );
 }
 
 export function DisabledCurrentDate() {
-  const nextMonth = new Date();
-  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const nextMonth = dayjs().add(1, 'month').format('YYYY-MM-DD');
 
   return (
     <div style={{ padding: 40, maxWidth: 400 }}>
@@ -62,7 +68,7 @@ export function DisabledCurrentDate() {
         label="Date picker input"
         placeholder="Pick date"
         minDate={nextMonth}
-        defaultValue={new Date()}
+        defaultValue={dayjs().format('YYYY-MM-DD')}
       />
     </div>
   );
@@ -97,8 +103,9 @@ export function LocaleChangesDatesProvider() {
 }
 
 export function ControlledValues() {
-  const [value, setValue] = useState<Date | null>(new Date());
-  const incrementDate = () => setValue((current) => dayjs(current!).subtract(-1, 'month').toDate());
+  const [value, setValue] = useState<string | null>(dayjs().format('YYYY-MM-DD'));
+  const incrementDate = () =>
+    setValue((current) => dayjs(current!).add(1, 'month').format('YYYY-MM-DD'));
 
   return (
     <div style={{ padding: 40, maxWidth: 400 }}>
@@ -110,7 +117,7 @@ export function ControlledValues() {
       />
       <Group mt="md">
         <Button onClick={incrementDate}>Increment</Button>
-        <Button onClick={() => setValue(new Date())}>Today</Button>
+        <Button onClick={() => setValue(dayjs().format('YYYY-MM-DD'))}>Today</Button>
       </Group>
     </div>
   );
@@ -124,7 +131,7 @@ export function ReadOnly() {
         mt="md"
         label="Read only with value"
         placeholder="Pick date"
-        defaultValue={new Date(2022, 3, 11)}
+        defaultValue="2022-04-11"
         clearable
         readOnly
       />
@@ -177,8 +184,10 @@ export function SelectedDisabledDate() {
     <div style={{ padding: 40 }}>
       <DatePickerInput
         label="Date picker input"
-        defaultValue={new Date()}
-        getDayProps={(date) => ({ disabled: dayjs(date).isSame(new Date(), 'day') })}
+        defaultValue={dayjs().format('YYYY-MM-DD')}
+        getDayProps={(date) => ({
+          disabled: dayjs(date).isSame(dayjs().format('YYYY-MM-DD'), 'day'),
+        })}
       />
     </div>
   );
@@ -187,7 +196,7 @@ export function SelectedDisabledDate() {
 export function WithMaxDate() {
   return (
     <div style={{ padding: 40 }}>
-      <DatePickerInput label="Date picker input" maxDate={new Date()} />
+      <DatePickerInput label="Date picker input" maxDate={dayjs().format('YYYY-MM-DD')} />
     </div>
   );
 }
@@ -219,8 +228,99 @@ export function Sizes() {
 export function DefaultDate() {
   return (
     <div style={{ padding: 40 }}>
-      <DatePickerInput defaultDate={new Date('1990/01/01')} />
-      <DatePickerInput defaultDate={new Date()} />
+      <DatePickerInput defaultDate="1990-01-01" />
+      <DatePickerInput defaultDate={dayjs().format('YYYY-MM-DD')} />
     </div>
+  );
+}
+
+export function DarkColorSchemeDemo() {
+  return (
+    <SimpleGrid maw={1040} cols={2} p={80} spacing="xl" verticalSpacing="md">
+      <DatePickerInput
+        type="range"
+        defaultValue={['2024-10-12', '2024-10-17']}
+        label="Date range picker"
+        size="lg"
+        radius="md"
+      />
+
+      <Select
+        data={['React']}
+        placeholder="Custom select"
+        label="Custom select"
+        size="lg"
+        radius="md"
+      />
+
+      <MultiSelect
+        data={['React', 'Angular']}
+        defaultValue={['React', 'Angular']}
+        label="Multiselect"
+        placeholder="Search items"
+        size="lg"
+        radius="md"
+        styles={{ pill: { background: 'var(--mantine-color-dark-5)' } }}
+      />
+
+      <NumberInput
+        label="NumberInput"
+        value={5361.44}
+        thousandSeparator
+        fixedDecimalScale
+        decimalScale={2}
+        prefix="$ "
+        size="lg"
+        radius="md"
+      />
+
+      <div>
+        <Autocomplete
+          label="Autocomplete"
+          placeholder="Autocomplete"
+          data={[]}
+          size="lg"
+          radius="md"
+          mb="md"
+        />
+        <Stack gap="lg">
+          <Radio.Group label="Radio" size="lg" defaultValue="react">
+            <Group mt={5}>
+              <Radio value="react" label="React" size="lg" />
+              <Radio value="angular" label="Angular" size="lg" />
+              <Radio value="vue" label="Vue" size="lg" />
+            </Group>
+          </Radio.Group>
+
+          <Checkbox label="Checkbox" size="lg" defaultChecked />
+        </Stack>
+      </div>
+
+      <div>
+        <ColorInput
+          defaultValue="#7048e8"
+          withEyeDropper={false}
+          label="Color input"
+          size="lg"
+          radius="md"
+          mb="md"
+        />
+
+        <Input.Label size="lg">Slider and RangeSlider</Input.Label>
+        <Slider defaultValue={60} size="lg" mt="sm" />
+        <RangeSlider
+          defaultValue={[25, 75]}
+          size="lg"
+          mt="sm"
+          marks={[
+            { value: 0, label: 'xs' },
+            { value: 25, label: 'sm' },
+            { value: 50, label: 'md' },
+            { value: 75, label: 'lg' },
+            { value: 100, label: 'xl' },
+          ]}
+        />
+      </div>
+    </SimpleGrid>
   );
 }

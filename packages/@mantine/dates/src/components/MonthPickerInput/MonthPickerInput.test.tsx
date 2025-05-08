@@ -1,13 +1,6 @@
 import { __InputStylesNames } from '@mantine/core';
-import {
-  inputDefaultProps,
-  inputStylesApiSelectors,
-  render,
-  tests,
-  userEvent,
-} from '@mantine-tests/core';
-import { clickInput, datesTests, expectValue } from '@mantine-tests/dates';
-import { DatesProvider } from '../DatesProvider';
+import { inputDefaultProps, inputStylesApiSelectors, render, tests } from '@mantine-tests/core';
+import { datesTests, expectValue } from '@mantine-tests/dates';
 import { MonthPickerInput, MonthPickerInputProps } from './MonthPickerInput';
 
 const defaultProps = {
@@ -52,14 +45,14 @@ describe('@mantine/dates/MonthPickerInput', () => {
   datesTests.itSupportsDateInputProps({ component: MonthPickerInput, props: defaultProps });
   datesTests.itSupportsClearableProps({
     component: MonthPickerInput,
-    props: { ...defaultProps, defaultValue: new Date() },
+    props: { ...defaultProps, defaultValue: '2022-04-11' },
   });
   datesTests.itSupportsYearsListProps({
     component: MonthPickerInput,
     props: {
       ...defaultProps,
       defaultLevel: 'decade',
-      defaultValue: new Date(2022, 3, 11),
+      defaultValue: '2022-04-11',
       popoverProps: { opened: true, withinPortal: false, transitionProps: { duration: 0 } },
     },
   });
@@ -68,14 +61,14 @@ describe('@mantine/dates/MonthPickerInput', () => {
     component: MonthPickerInput,
     props: {
       ...defaultProps,
-      defaultValue: new Date(2022, 3, 11),
+      defaultValue: '2022-04-11',
       popoverProps: { opened: true, withinPortal: false, transitionProps: { duration: 0 } },
     },
   });
 
   it('supports valueFormat prop', () => {
     const { container, rerender } = render(
-      <MonthPickerInput {...defaultProps} valueFormat="MMMM" value={new Date(2022, 3, 11)} />
+      <MonthPickerInput {...defaultProps} valueFormat="MMMM" value="2022-04-11" />
     );
     expectValue(container, 'April');
 
@@ -84,7 +77,7 @@ describe('@mantine/dates/MonthPickerInput', () => {
         {...defaultProps}
         type="multiple"
         valueFormat="MMMM"
-        value={[new Date(2022, 3, 11), new Date(2022, 4, 11)]}
+        value={['2022-04-11', '2022-05-11']}
       />
     );
     expectValue(container, 'April, May');
@@ -94,7 +87,7 @@ describe('@mantine/dates/MonthPickerInput', () => {
         {...defaultProps}
         type="range"
         valueFormat="MMMM"
-        value={[new Date(2022, 3, 11), new Date(2022, 4, 11)]}
+        value={['2022-04-11', '2022-05-11']}
       />
     );
     expectValue(container, 'April – May');
@@ -114,25 +107,5 @@ describe('@mantine/dates/MonthPickerInput', () => {
     expect(container.querySelector('table button')).toHaveClass(
       'mantine-MonthPickerInput-monthsListControl'
     );
-  });
-
-  it('can be controlled (type="default") with timezone', async () => {
-    const spy = jest.fn();
-    const { container } = render(
-      <DatesProvider settings={{ timezone: 'UTC' }}>
-        <MonthPickerInput
-          {...defaultProps}
-          date={new Date(2022, 0, 31, 23)}
-          value={new Date(2022, 0, 31, 23)}
-          onChange={spy}
-        />
-      </DatesProvider>
-    );
-
-    await clickInput(container);
-    expect(container.querySelector('[data-selected]')!.textContent).toBe('Feb');
-
-    await userEvent.click(container.querySelector('table button')!);
-    expect(spy).toHaveBeenCalledWith(new Date(2021, 11, 31, 19));
   });
 });

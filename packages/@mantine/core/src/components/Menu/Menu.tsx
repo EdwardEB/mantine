@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useDidUpdate, useUncontrolled } from '@mantine/hooks';
+import { useUncontrolled } from '@mantine/hooks';
 import {
   ExtendComponent,
   Factory,
   getContextItemIndex,
   getWithProps,
   StylesApiProps,
-  useHovered,
   useProps,
   useResolvedStylesApi,
   useStyles,
@@ -18,6 +17,7 @@ import { MenuDivider } from './MenuDivider/MenuDivider';
 import { MenuDropdown } from './MenuDropdown/MenuDropdown';
 import { MenuItem } from './MenuItem/MenuItem';
 import { MenuLabel } from './MenuLabel/MenuLabel';
+import { MenuSub } from './MenuSub/MenuSub';
 import { MenuTarget } from './MenuTarget/MenuTarget';
 import classes from './Menu.module.css';
 
@@ -27,11 +27,11 @@ export type MenuStylesNames =
   | 'itemSection'
   | 'label'
   | 'divider'
+  | 'chevron'
   | PopoverStylesNames;
 
 export type MenuFactory = Factory<{
   props: MenuProps;
-  ref: HTMLDivElement;
   stylesNames: MenuStylesNames;
 }>;
 
@@ -141,7 +141,6 @@ export function Menu(_props: MenuProps) {
     unstyled,
   });
 
-  const [hovered, { setHovered, resetHovered }] = useHovered();
   const [_opened, setOpened] = useUncontrolled({
     value: opened,
     defaultValue: defaultOpened,
@@ -176,10 +175,6 @@ export function Menu(_props: MenuProps) {
     props,
   });
 
-  useDidUpdate(() => {
-    resetHovered();
-  }, [_opened]);
-
   return (
     <MenuContextProvider
       value={{
@@ -187,8 +182,6 @@ export function Menu(_props: MenuProps) {
         opened: _opened,
         toggleDropdown,
         getItemIndex,
-        hovered,
-        setHovered,
         openedViaClick,
         setOpenedViaClick,
         closeOnItemClick,
@@ -231,3 +224,4 @@ Menu.Label = MenuLabel;
 Menu.Dropdown = MenuDropdown;
 Menu.Target = MenuTarget;
 Menu.Divider = MenuDivider;
+Menu.Sub = MenuSub;

@@ -1,18 +1,22 @@
-export function assignTime(originalDate: Date, resultDate: Date) {
-  if (!originalDate || !resultDate) {
-    return resultDate;
+import dayjs from 'dayjs';
+import { DateStringValue } from '../../types';
+
+export function assignTime(
+  dateValue: DateStringValue | null, // Date to assign time to
+  timeString: string // HH:mm:ss format
+): DateStringValue | null {
+  let date = dateValue ? dayjs(dateValue) : dayjs();
+
+  if (timeString === '') {
+    return date.format('YYYY-MM-DD HH:mm:ss');
   }
 
-  const hours = originalDate.getHours();
-  const minutes = originalDate.getMinutes();
-  const seconds = originalDate.getSeconds();
-  const ms = originalDate.getMilliseconds();
+  const [hours, minutes, seconds = 0] = timeString.split(':').map(Number);
 
-  const result = new Date(resultDate);
-  result.setHours(hours);
-  result.setMinutes(minutes);
-  result.setSeconds(seconds);
-  result.setMilliseconds(ms);
+  date = date.set('hour', hours);
+  date = date.set('minute', minutes);
+  date = date.set('second', seconds);
+  date = date.set('millisecond', 0);
 
-  return result;
+  return date.format('YYYY-MM-DD HH:mm:ss');
 }

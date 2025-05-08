@@ -1,10 +1,12 @@
 .root {
   display: flex;
   align-items: center;
-  gap: var(--mantine-spacing-xl);
+  justify-content: space-between;
   margin-top: 50px;
+  border-top: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  padding-top: var(--mantine-spacing-lg);
 
-  @media (max-width: em(700px)) {
+  @mixin smaller-than em(700px) {
     flex-direction: column;
     align-items: stretch;
     gap: var(--mantine-spacing-md);
@@ -13,70 +15,28 @@
 
 .link {
   -webkit-tap-highlight-color: transparent;
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   text-decoration: none;
-  padding: var(--mantine-spacing-md);
+  padding: 7px 12px;
   border-radius: var(--mantine-radius-md);
+  color: var(--mantine-color-bright);
+  gap: var(--mantine-spacing-xs);
 
-  @mixin light {
-    color: var(--mantine-colors-black);
-    background-color: var(--mantine-color-white);
-    border: 1px solid var(--mantine-color-gray-3);
-
-    @mixin hover {
-      background-color: var(--mantine-color-gray-0);
-    }
-  }
-
-  @mixin dark {
-    color: var(--mantine-colors-white);
-    background-color: var(--mantine-color-dark-6);
-    border: 1px solid var(--mantine-color-dark-4);
-
-    @mixin hover {
-      background-color: var(--mantine-color-dark-5);
-    }
-  }
-}
-
-.body {
-  &[data-next] {
-    text-align: left;
-    margin-right: var(--mantine-spacing-md);
-
-    @mixin rtl {
-      margin-right: 0;
-      margin-left: var(--mantine-spacing-md);
-      text-align: right;
-    }
-  }
-
-  &[data-prev] {
-    text-align: right;
-    margin-left: var(--mantine-spacing-md);
-
-    @mixin rtl {
-      margin-left: 0;
-      margin-right: var(--mantine-spacing-md);
-      text-align: left;
-    }
+  @mixin hover {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-5));
   }
 }
 
 .title {
-  font-size: var(--mantine-font-size-lg);
-}
-
-.description {
   font-size: var(--mantine-font-size-sm);
+  font-weight: 500;
 }
 
 .icon {
-  width: 25px;
-  height: 25px;
+  width: 18px;
+  height: 18px;
 
   @mixin rtl {
     transform: rotate(180deg);

@@ -11,23 +11,21 @@ import '@mantine/charts/styles.css';
 import '@mantinex/demo/styles.css';
 import '@mantinex/mantine-logo/styles.css';
 import '@mantinex/mantine-header/styles.css';
-import '@mantinex/shiki/styles.css';
 import '@docs/demos/styles.css';
 
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import { CodeHighlightAdapterProvider, createShikiAdapter } from '@mantine/code-highlight';
 import { DirectionProvider, MantineProvider } from '@mantine/core';
 import { MantineEmotionProvider } from '@mantine/emotion';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { Notifications } from '@mantine/notifications';
-import { ShikiProvider } from '@mantinex/shiki';
 import { GaScript } from '@/components/GaScript';
 import { HotKeysHandler } from '@/components/HotKeysHandler';
 import { MdxProvider } from '@/components/MdxProvider';
 import { ModalsProviderDemo } from '@/components/ModalsProviderDemo';
 import { Search } from '@/components/Search';
 import { Shell } from '@/components/Shell';
-import { FontsStyle } from '@/fonts';
 import { theme } from '../../theme';
 import { emotionCache } from '../emotion';
 
@@ -36,14 +34,16 @@ import '../styles/variables.css';
 const excludeShell = ['/', '/combobox', '/app-shell'];
 
 async function loadShiki() {
-  const { getHighlighter } = await import('shiki');
-  const shiki = await getHighlighter({
+  const { createHighlighter } = await import('shiki');
+  const shiki = await createHighlighter({
     langs: ['tsx', 'scss', 'html', 'bash', 'json'],
     themes: [],
   });
 
   return shiki;
 }
+
+const shikiAdapter = createShikiAdapter(loadShiki);
 
 export default function App({ Component, pageProps, router }: AppProps) {
   const shouldRenderShell = !excludeShell.includes(router.pathname);
@@ -74,18 +74,17 @@ export default function App({ Component, pageProps, router }: AppProps) {
         />
       </Head>
       <GaScript />
-      <FontsStyle />
       <DirectionProvider initialDirection="ltr" detectDirection={false}>
         <MantineEmotionProvider cache={emotionCache}>
           <MantineProvider theme={theme} defaultColorScheme="light">
-            <ShikiProvider loadShiki={loadShiki}>
+            <CodeHighlightAdapterProvider adapter={shikiAdapter}>
               <Search />
               <Notifications />
               <ModalsProviderDemo>
                 <MdxProvider>
                   <HotKeysHandler />
                   {shouldRenderShell ? (
-                    <Shell withNavbar={navbarOpened}>
+                    <Shell>
                       <Component {...pageProps} />
                     </Shell>
                   ) : (
@@ -93,7 +92,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
                   )}
                 </MdxProvider>
               </ModalsProviderDemo>
-            </ShikiProvider>
+            </CodeHighlightAdapterProvider>
           </MantineProvider>
         </MantineEmotionProvider>
       </DirectionProvider>

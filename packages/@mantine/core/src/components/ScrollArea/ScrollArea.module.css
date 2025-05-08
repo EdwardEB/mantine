@@ -161,3 +161,7 @@
     display: none;
   }
 }
+
+.content {
+  min-width: 100%;
+}

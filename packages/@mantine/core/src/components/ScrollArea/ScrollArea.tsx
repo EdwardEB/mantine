@@ -19,7 +19,14 @@ import { ScrollAreaThumb } from './ScrollAreaThumb/ScrollAreaThumb';
 import { ScrollAreaViewport } from './ScrollAreaViewport/ScrollAreaViewport';
 import classes from './ScrollArea.module.css';
 
-export type ScrollAreaStylesNames = 'root' | 'viewport' | 'scrollbar' | 'thumb' | 'corner';
+export type ScrollAreaStylesNames =
+  | 'root'
+  | 'viewport'
+  | 'scrollbar'
+  | 'thumb'
+  | 'corner'
+  | 'content';
+
 export type ScrollAreaCssVariables = {
   root: '--scrollarea-scrollbar-size';
 };
@@ -164,6 +171,7 @@ export const ScrollArea = factory<ScrollAreaFactory>((_props, ref) => {
 
   return (
     <ScrollAreaRoot
+      getStyles={getStyles}
       type={type === 'never' ? 'always' : type}
       scrollHideDelay={scrollHideDelay}
       ref={ref}

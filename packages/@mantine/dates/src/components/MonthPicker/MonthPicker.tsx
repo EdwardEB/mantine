@@ -9,10 +9,8 @@ import {
   useResolvedStylesApi,
 } from '@mantine/core';
 import { useDatesState } from '../../hooks';
-import { CalendarLevel, DatePickerType, PickerBaseProps } from '../../types';
-import { shiftTimezone } from '../../utils';
+import { CalendarLevel, DatePickerType, DateStringValue, PickerBaseProps } from '../../types';
 import { Calendar, CalendarBaseProps } from '../Calendar';
-import { useDatesContext } from '../DatesProvider';
 import { DecadeLevelBaseSettings } from '../DecadeLevel';
 import { DecadeLevelGroupStylesNames } from '../DecadeLevelGroup';
 import { YearLevelBaseSettings } from '../YearLevel';
@@ -27,14 +25,14 @@ export interface MonthPickerBaseProps<Type extends DatePickerType = 'default'>
     DecadeLevelBaseSettings,
     YearLevelBaseSettings,
     Omit<CalendarBaseProps, 'onNextMonth' | 'onPreviousMonth' | 'hasNextLevel'> {
-  /** Max level that user can go up to (decade, year), defaults to decade */
-  maxLevel?: MonthPickerLevel;
+  /** Max level that user can go up to, `'decade'` by default */
+  maxLevel?: CalendarLevel;
 
-  /** Initial level displayed to the user (decade, year, month), used for uncontrolled component */
-  defaultLevel?: MonthPickerLevel;
+  /** Initial displayed level (uncontrolled) */
+  defaultLevel?: CalendarLevel;
 
-  /** Current level displayed to the user (decade, year, month), used for controlled component */
-  level?: MonthPickerLevel;
+  /** Current displayed level (controlled) */
+  level?: CalendarLevel;
 
   /** Called when level changes */
   onLevelChange?: (level: MonthPickerLevel) => void;
@@ -46,7 +44,7 @@ export interface MonthPickerProps<Type extends DatePickerType = 'default'>
     StylesApiProps<MonthPickerFactory>,
     ElementProps<'div', 'onChange' | 'value' | 'defaultValue'> {
   /** Called when month is selected */
-  onMonthSelect?: (date: Date) => void;
+  onMonthSelect?: (date: DateStringValue) => void;
 }
 
 export type MonthPickerFactory = Factory<{
@@ -82,7 +80,6 @@ export const MonthPicker: MonthPickerComponent = factory<MonthPickerFactory>((_p
     onMouseLeave,
     onMonthSelect,
     __updateDateOnMonthSelect,
-    __timezoneApplied,
     onLevelChange,
     ...others
   } = props;
@@ -96,7 +93,6 @@ export const MonthPicker: MonthPickerComponent = factory<MonthPickerFactory>((_p
     defaultValue,
     onChange: onChange as any,
     onMouseLeave,
-    applyTimezone: !__timezoneApplied,
   });
 
   const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<MonthPickerFactory>({
@@ -104,7 +100,6 @@ export const MonthPicker: MonthPickerComponent = factory<MonthPickerFactory>((_p
     styles,
     props,
   });
-  const ctx = useDatesContext();
 
   return (
     <Calendar
@@ -126,8 +121,6 @@ export const MonthPicker: MonthPickerComponent = factory<MonthPickerFactory>((_p
       styles={resolvedStyles}
       onLevelChange={onLevelChange as any}
       {...others}
-      date={shiftTimezone('add', others.date, ctx.getTimezone(), __timezoneApplied)}
-      __timezoneApplied
     />
   );
 }) as any;

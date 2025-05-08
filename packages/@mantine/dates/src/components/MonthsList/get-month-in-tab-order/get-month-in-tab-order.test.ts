@@ -2,43 +2,54 @@ import dayjs from 'dayjs';
 import { getMonthsData } from '../get-months-data/get-months-data';
 import { getMonthInTabOrder } from './get-month-in-tab-order';
 
-const defaultMonths = getMonthsData(new Date(2010, 0));
-const defaultMinMonth = new Date(2000, 0);
-const defaultMaxMonth = new Date(2100, 0);
-const defaultSelectedMonth = new Date(2010, 5);
+const defaultMonths = getMonthsData('2010-01-01');
+const defaultMinMonth = '2000-01-01';
+const defaultMaxMonth = '2100-01-01';
+const defaultSelectedMonth = '2010-06-01';
 const defaultControlProps = () => ({});
 
 describe('@mantine/dates/get-month-in-tab-order', () => {
   it('returns selected month', () => {
     expect(
-      getMonthInTabOrder(defaultMonths, defaultMinMonth, defaultMaxMonth, (date: Date) => ({
-        selected: dayjs(date).isSame(defaultSelectedMonth, 'month'),
-      }))
+      getMonthInTabOrder({
+        months: defaultMonths,
+        minDate: defaultMinMonth,
+        maxDate: defaultMaxMonth,
+        getMonthControlProps: (date: string) => ({
+          selected: dayjs(date).isSame(defaultSelectedMonth, 'month'),
+        }),
+      })
     ).toStrictEqual(defaultSelectedMonth);
   });
 
   it('returns current month', () => {
+    const currentMonth = dayjs().startOf('month').format('YYYY-MM-DD');
     expect(
-      getMonthInTabOrder(
-        getMonthsData(new Date()),
-        defaultMinMonth,
-        defaultMaxMonth,
-        defaultControlProps
-      )
-    ).toStrictEqual(new Date(new Date().getFullYear(), new Date().getMonth()));
+      getMonthInTabOrder({
+        months: getMonthsData(currentMonth),
+        minDate: defaultMinMonth,
+        maxDate: defaultMaxMonth,
+        getMonthControlProps: defaultControlProps,
+      })
+    ).toStrictEqual(currentMonth);
   });
 
   it('returns first non-disabled month in year', () => {
     expect(
-      getMonthInTabOrder(
-        getMonthsData(new Date(2010, 0)),
-        defaultMinMonth,
-        defaultMaxMonth,
-        defaultControlProps
-      )
-    ).toStrictEqual(new Date(2010, 0));
+      getMonthInTabOrder({
+        months: getMonthsData('2010-01-01'),
+        minDate: defaultMinMonth,
+        maxDate: defaultMaxMonth,
+        getMonthControlProps: defaultControlProps,
+      })
+    ).toStrictEqual('2010-01-01');
     expect(
-      getMonthInTabOrder(defaultMonths, new Date(2010, 5), defaultMaxMonth, defaultControlProps)
-    ).toStrictEqual(new Date(2010, 5));
+      getMonthInTabOrder({
+        months: defaultMonths,
+        minDate: '2010-06-01',
+        maxDate: defaultMaxMonth,
+        getMonthControlProps: defaultControlProps,
+      })
+    ).toStrictEqual('2010-06-01');
   });
 });

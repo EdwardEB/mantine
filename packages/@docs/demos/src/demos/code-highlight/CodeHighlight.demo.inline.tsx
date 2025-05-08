@@ -10,8 +10,12 @@ function Demo() {
   return (
     <Text>
       You can highlight code inline:{' '}
-      <InlineCodeHighlight code='<InlineCodeHighlight code="" language="tsx" />' language="tsx" />.
-      Is that not cool?
+      <InlineCodeHighlight
+        code='<InlineCodeHighlight code="" language="tsx" />'
+        language="tsx"
+        withBorder
+      />
+      . Is that not cool?
     </Text>
   );
 }
@@ -21,8 +25,12 @@ function Demo() {
   return (
     <Text>
       You can highlight code inline:{' '}
-      <InlineCodeHighlight code='<InlineCodeHighlight code="" language="tsx" />' language="tsx" />.
-      Is that not cool?
+      <InlineCodeHighlight
+        code='<InlineCodeHighlight code="" language="tsx" />'
+        language="tsx"
+        withBorder
+      />
+      . Is that not cool?
     </Text>
   );
 }

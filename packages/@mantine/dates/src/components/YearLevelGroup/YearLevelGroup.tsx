@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { useRef } from 'react';
 import { BoxProps, ElementProps, factory, Factory, StylesApiProps, useProps } from '@mantine/core';
+import { DateStringValue } from '../../types';
 import { handleControlKeyDown } from '../../utils';
 import { LevelsGroup, LevelsGroupStylesNames } from '../LevelsGroup';
 import { YearLevel, YearLevelSettings, YearLevelStylesNames } from '../YearLevel';
@@ -16,14 +17,14 @@ export interface YearLevelGroupProps
   styles?: Partial<Record<string, React.CSSProperties>>;
   __staticSelector?: string;
 
-  /** Number of columns to render next to each other */
+  /** Number of columns displayed next to each other */
   numberOfColumns?: number;
 
-  /** Year that is currently displayed */
-  year: Date;
+  /** Displayed year */
+  year: DateStringValue;
 
-  /** Function that returns level control aria-label based on year date */
-  levelControlAriaLabel?: ((year: Date) => string) | string;
+  /** Function that returns level control `aria-label` */
+  levelControlAriaLabel?: ((year: DateStringValue) => string) | string;
 }
 
 export type YearLevelGroupFactory = Factory<{
@@ -82,7 +83,7 @@ export const YearLevelGroup = factory<YearLevelGroupFactory>((_props, ref) => {
   const years = Array(numberOfColumns)
     .fill(0)
     .map((_, yearIndex) => {
-      const currentYear = dayjs(year).add(yearIndex, 'years').toDate();
+      const currentYear = dayjs(year).add(yearIndex, 'years').format('YYYY-MM-DD');
 
       return (
         <YearLevel

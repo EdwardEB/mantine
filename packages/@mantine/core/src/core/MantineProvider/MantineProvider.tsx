@@ -1,16 +1,15 @@
+import './baseline.css';
 import './global.css';
+import './default-css-variables.css';
 
 import { localStorageColorSchemeManager, MantineColorSchemeManager } from './color-scheme-managers';
 import { MantineContext, MantineStylesTransform } from './Mantine.context';
 import { MantineClasses } from './MantineClasses';
 import { CSSVariablesResolver, MantineCssVariables } from './MantineCssVariables';
 import { MantineThemeProvider } from './MantineThemeProvider';
-import { suppressNextjsWarning } from './suppress-nextjs-warning';
 import type { MantineColorScheme, MantineThemeOverride } from './theme.types';
 import { useProviderColorScheme } from './use-mantine-color-scheme';
 import { useRespectReduceMotion } from './use-respect-reduce-motion';
-
-suppressNextjsWarning();
 
 export interface MantineProviderProps {
   /** Theme override object */

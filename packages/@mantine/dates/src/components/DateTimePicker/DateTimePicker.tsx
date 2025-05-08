@@ -15,8 +15,8 @@ import {
 } from '@mantine/core';
 import { useDidUpdate, useDisclosure, useMergedRef } from '@mantine/hooks';
 import { useUncontrolledDates } from '../../hooks';
-import { CalendarLevel, DateValue } from '../../types';
-import { assignTime, shiftTimezone } from '../../utils';
+import { CalendarLevel, DateStringValue, DateValue } from '../../types';
+import { assignTime, clampDate } from '../../utils';
 import {
   CalendarBaseProps,
   CalendarSettings,
@@ -30,7 +30,8 @@ import {
   PickerInputBase,
   PickerInputBaseStylesNames,
 } from '../PickerInputBase';
-import { TimeInput, TimeInputProps } from '../TimeInput';
+import { TimePicker, TimePickerProps } from '../TimePicker/TimePicker';
+import { getMaxTime, getMinTime } from './get-min-max-time/get-min-max-time';
 import classes from './DateTimePicker.module.css';
 
 export type DateTimePickerStylesNames =
@@ -49,30 +50,28 @@ export interface DateTimePickerProps
     Omit<CalendarBaseProps, 'defaultDate'>,
     Omit<CalendarSettings, 'onYearMouseEnter' | 'onMonthMouseEnter' | 'hasNextLevel'>,
     StylesApiProps<DateTimePickerFactory> {
-  /** Dayjs format to display input value, "DD/MM/YYYY HH:mm" by default  */
+  /** dayjs format for input value, `"DD/MM/YYYY HH:mm"` by default  */
   valueFormat?: string;
 
   /** Controlled component value */
   value?: DateValue;
 
-  /** Default value for uncontrolled component */
+  /** Uncontrolled component default value */
   defaultValue?: DateValue;
 
   /** Called when value changes */
-  onChange?: (value: DateValue) => void;
+  onChange?: (value: DateStringValue) => void;
 
-  /** TimeInput component props */
-  timeInputProps?: Omit<TimeInputProps, 'defaultValue' | 'value'> & {
-    ref?: React.ComponentPropsWithRef<'input'>['ref'];
-  };
+  /** Props passed down to `TimePicker` component */
+  timePickerProps?: Omit<TimePickerProps, 'defaultValue' | 'value'>;
 
   /** Props passed down to the submit button */
   submitButtonProps?: ActionIconProps & React.ComponentPropsWithoutRef<'button'>;
 
-  /** Determines whether seconds input should be rendered */
+  /** Determines whether the seconds input should be displayed, `false` by default */
   withSeconds?: boolean;
 
-  /** Max level that user can go up to (decade, year, month), defaults to decade */
+  /** Max level that user can go up to, `'decade'` by default */
   maxLevel?: CalendarLevel;
 }
 
@@ -98,7 +97,7 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
     classNames,
     styles,
     unstyled,
-    timeInputProps,
+    timePickerProps,
     submitButtonProps,
     withSeconds,
     level,
@@ -130,8 +129,8 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
 
   const _valueFormat = valueFormat || (withSeconds ? 'DD/MM/YYYY HH:mm:ss' : 'DD/MM/YYYY HH:mm');
 
-  const timeInputRef = useRef<HTMLInputElement>(null);
-  const timeInputRefMerged = useMergedRef(timeInputRef, timeInputProps?.ref);
+  const timePickerRef = useRef<HTMLInputElement>(null);
+  const timePickerRefMerged = useMergedRef(timePickerRef, timePickerProps?.hoursRef);
 
   const {
     calendarProps: { allowSingleDateInRange, ...calendarProps },
@@ -144,9 +143,10 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
     value,
     defaultValue,
     onChange,
+    withTime: true,
   });
 
-  const formatTime = (dateValue: Date) =>
+  const formatTime = (dateValue: DateStringValue) =>
     dateValue ? dayjs(dateValue).format(withSeconds ? 'HH:mm:ss' : 'HH:mm') : '';
 
   const [timeValue, setTimeValue] = useState(formatTime(_value!));
@@ -154,35 +154,26 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
 
   const [dropdownOpened, dropdownHandlers] = useDisclosure(false);
   const formattedValue = _value
-    ? dayjs(_value).locale(ctx.getLocale(locale)).tz(ctx.getTimezone(), true).format(_valueFormat)
+    ? dayjs(_value).locale(ctx.getLocale(locale)).format(_valueFormat)
     : '';
 
-  const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    timeInputProps?.onChange?.(event);
-    const val = event.currentTarget.value;
-    setTimeValue(val);
+  const handleTimeChange = (timeString: string) => {
+    timePickerProps?.onChange?.(timeString);
+    setTimeValue(timeString);
 
-    if (val) {
-      const [hours, minutes, seconds] = val.split(':').map(Number);
-      const timeDate = shiftTimezone('add', new Date(), ctx.getTimezone());
-      timeDate.setHours(hours);
-      timeDate.setMinutes(minutes);
-      timeDate.setSeconds(seconds || 0);
-      timeDate.setMilliseconds(0);
-      setValue(assignTime(timeDate, _value || shiftTimezone('add', new Date(), ctx.getTimezone())));
+    if (timeString) {
+      setValue(assignTime(_value, timeString));
     }
   };
 
   const handleDateChange = (date: DateValue) => {
     if (date) {
-      setValue(assignTime(_value, date));
+      setValue(assignTime(clampDate(minDate!, maxDate!, date!), timeValue));
     }
-    timeInputRef.current?.focus();
+    timePickerRef.current?.focus();
   };
 
   const handleTimeInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    timeInputProps?.onKeyDown?.(event);
-
     if (event.key === 'Enter') {
       event.preventDefault();
       dropdownHandlers.close();
@@ -201,10 +192,14 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
     }
   }, [dropdownOpened]);
 
-  const minTime = minDate ? dayjs(minDate).format('HH:mm:ss') : null;
-  const maxTime = maxDate ? dayjs(maxDate).format('HH:mm:ss') : null;
-
   const __stopPropagation = dropdownType === 'popover';
+
+  const handleDropdownClose = () => {
+    const clamped = clampDate(minDate, maxDate, _value);
+    if (_value && _value !== clamped) {
+      setValue(clampDate(minDate, maxDate, _value));
+    }
+  };
 
   return (
     <PickerInputBase
@@ -224,7 +219,8 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
       {...others}
       type="default"
       __staticSelector="DateTimePicker"
-      // ValueFormatter={valueFormatter}
+      onDropdownClose={handleDropdownClose}
+      withTime
     >
       <DatePicker
         {...calendarProps}
@@ -248,42 +244,29 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
           setCurrentLevel(_level);
           calendarProps.onLevelChange?.(_level);
         }}
-        __timezoneApplied
       />
 
       {currentLevel === 'month' && (
         <div {...getStyles('timeWrapper')}>
-          <TimeInput
+          <TimePicker
             value={timeValue}
             withSeconds={withSeconds}
-            ref={timeInputRefMerged}
             unstyled={unstyled}
-            minTime={
-              _value && minDate && _value.toDateString() === minDate.toDateString()
-                ? minTime != null
-                  ? minTime
-                  : undefined
-                : undefined
-            }
-            maxTime={
-              _value && maxDate && _value.toDateString() === maxDate.toDateString()
-                ? maxTime != null
-                  ? maxTime
-                  : undefined
-                : undefined
-            }
-            {...timeInputProps}
+            min={getMinTime({ minDate, value: _value })}
+            max={getMaxTime({ maxDate, value: _value })}
+            {...timePickerProps}
             {...getStyles('timeInput', {
-              className: timeInputProps?.className,
-              style: timeInputProps?.style,
+              className: timePickerProps?.className,
+              style: timePickerProps?.style,
             })}
             onChange={handleTimeChange}
             onKeyDown={handleTimeInputKeyDown}
             size={size}
             data-mantine-stop-propagation={__stopPropagation || undefined}
+            hoursRef={timePickerRefMerged}
           />
 
-          <ActionIcon<'button'>
+          <ActionIcon
             variant="default"
             size={`input-${size || 'sm'}`}
             {...getStyles('submitButton', {
@@ -298,6 +281,7 @@ export const DateTimePicker = factory<DateTimePickerFactory>((_props, ref) => {
             onClick={(event) => {
               submitButtonProps?.onClick?.(event);
               dropdownHandlers.close();
+              handleDropdownClose();
             }}
           />
         </div>

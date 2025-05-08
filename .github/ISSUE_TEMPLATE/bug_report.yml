@@ -42,7 +42,6 @@ body:
         - '@mantinex/dev-icons'
         - '@mantinex/mantine-header'
         - '@mantinex/mantine-meta'
-        - '@mantinex/shiki'
     validations:
       required: true
 
@@ -53,7 +52,7 @@ body:
       options:
         - 'Next.js'
         - 'Vite'
-        - 'Remix'
+        - 'React Router'
         - 'Gatsby'
         - 'Redwood'
         - 'create-react-app (CRA)'

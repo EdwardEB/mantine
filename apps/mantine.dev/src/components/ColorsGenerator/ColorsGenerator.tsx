@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { generateColorsMap } from '@mantine/colors-generator';
+import { Title } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
-import { MdxTitle } from '@/components/MdxProvider';
 import { ColorsInput } from './ColorsInput/ColorsInput';
 import { ColorsList } from './ColorsList/ColorsList';
 import { ColorsOutput } from './ColorsOutput/ColorsOutput';
@@ -25,8 +25,10 @@ export function ColorsGenerator() {
   }, [router.query.color]);
 
   return (
-    <div>
-      <MdxTitle order={1}>Mantine colors generator</MdxTitle>
+    <div style={{ maxWidth: 'calc(100vw - var(--mantine-spacing-lg) * 2)' }}>
+      <Title fw={500} mb="md" pt="lg" c="bright">
+        Mantine colors generator
+      </Title>
       <ColorsInput
         value={color}
         onChange={setColor}

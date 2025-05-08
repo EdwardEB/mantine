@@ -10,7 +10,7 @@ import {
   useProps,
   useStyles,
 } from '@mantine/core';
-import { ControlsGroupSettings } from '../../types';
+import { ControlsGroupSettings, DateStringValue } from '../../types';
 import { useDatesContext } from '../DatesProvider';
 import { PickerControl, PickerControlProps } from '../PickerControl';
 import { getYearInTabOrder } from './get-year-in-tab-order/get-year-in-tab-order';
@@ -31,16 +31,16 @@ export interface YearsListSettings extends ControlsGroupSettings {
   /** Determines whether propagation for Escape key should be stopped */
   __stopPropagation?: boolean;
 
-  /** Dayjs format for years list, `'YYYY'` by default  */
+  /** dayjs format for years list, `'YYYY'` by default  */
   yearsListFormat?: string;
 
-  /** Adds props to year picker control based on date */
-  getYearControlProps?: (date: Date) => Partial<PickerControlProps>;
+  /** Passes props down to year picker control based on date */
+  getYearControlProps?: (date: DateStringValue) => Partial<PickerControlProps>;
 
   /** Component size */
   size?: MantineSize;
 
-  /** Determines whether controls should be separated by spacing, true by default */
+  /** Determines whether controls should be separated, `true` by default */
   withCellSpacing?: boolean;
 }
 
@@ -51,8 +51,8 @@ export interface YearsListProps
     ElementProps<'table'> {
   __staticSelector?: string;
 
-  /** Decade for which years list should be displayed */
-  decade: Date;
+  /** Decade value to display */
+  decade: DateStringValue;
 }
 
 export type YearsListFactory = Factory<{
@@ -110,7 +110,12 @@ export const YearsList = factory<YearsListFactory>((_props, ref) => {
 
   const years = getYearsData(decade);
 
-  const yearInTabOrder = getYearInTabOrder(years, minDate, maxDate, getYearControlProps);
+  const yearInTabOrder = getYearInTabOrder({
+    years,
+    minDate,
+    maxDate,
+    getYearControlProps,
+  });
 
   const rows = years.map((yearsRow, rowIndex) => {
     const cells = yearsRow.map((year, cellIndex) => {
@@ -127,7 +132,7 @@ export const YearsList = factory<YearsListFactory>((_props, ref) => {
             size={size}
             unstyled={unstyled}
             data-mantine-stop-propagation={__stopPropagation || undefined}
-            disabled={isYearDisabled(year, minDate, maxDate)}
+            disabled={isYearDisabled({ year, minDate, maxDate })}
             ref={(node) => __getControlRef?.(rowIndex, cellIndex, node!)}
             {...controlProps}
             onKeyDown={(event) => {

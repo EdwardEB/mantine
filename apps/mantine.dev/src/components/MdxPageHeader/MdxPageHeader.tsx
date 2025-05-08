@@ -1,14 +1,10 @@
 import { IconCalendar, IconLicense, IconPencil, IconSwitch2 } from '@tabler/icons-react';
-import { Box, rem, Text, Title } from '@mantine/core';
+import { Text, Title } from '@mantine/core';
 import { GithubIcon, NpmIcon } from '@mantinex/dev-icons';
+import { DOCS_BASE, SOURCE_BASE } from '@/links';
 import { Frontmatter } from '@/types';
-import { ImportStatement } from './ImportStatement/ImportStatement';
 import { LinkItem } from './LinkItem/LinkItem';
 import classes from './MdxPageHeader.module.css';
-
-const REPO_BASE = 'https://github.com/mantinedev/mantine/blob/master';
-const DOCS_BASE = `${REPO_BASE}/apps/mantine.dev/src/pages`;
-const SOURCE_BASE = `${REPO_BASE}/packages`;
 
 interface MdxPageHeaderProps {
   meta: Frontmatter;
@@ -16,7 +12,7 @@ interface MdxPageHeaderProps {
 
 export function MdxPageHeader({ meta }: MdxPageHeaderProps) {
   const withTabs = Array.isArray(meta.props);
-  const hasLinks = !!(meta.import || meta.source);
+  const hasLinks = !!meta.source;
   const withTitle = !!meta.title;
 
   if (meta.hideHeader) {
@@ -28,17 +24,15 @@ export function MdxPageHeader({ meta }: MdxPageHeaderProps) {
   }
 
   return (
-    <div className={classes.wrapper}>
-      <Box className={classes.header} mod={{ 'with-tabs': withTabs }}>
+    <div className={classes.wrapper} data-with-tabs={withTabs || undefined}>
+      <div className={classes.header} data-with-tabs={withTabs || undefined}>
         <Title className={classes.title}>{meta.title}</Title>
         <Text className={classes.description}>{meta.description}</Text>
-
-        {meta.import && <ImportStatement code={meta.import} />}
 
         {meta.polymorphic && (
           <LinkItem
             label="Polymorphic"
-            icon={<IconSwitch2 style={{ width: rem(14), height: rem(14) }} stroke={1.5} />}
+            icon={<IconSwitch2 size={14} stroke={1.5} />}
             link="/guides/polymorphic"
           >
             Polymorphic component
@@ -58,7 +52,7 @@ export function MdxPageHeader({ meta }: MdxPageHeaderProps) {
         {meta.date && meta.release && (
           <LinkItem
             label="Release date"
-            icon={<IconCalendar style={{ width: rem(14), height: rem(14) }} stroke={1.5} />}
+            icon={<IconCalendar size={14} stroke={1.5} />}
             link={meta.release}
           >
             {meta.date}
@@ -74,7 +68,7 @@ export function MdxPageHeader({ meta }: MdxPageHeaderProps) {
         {meta.docs && (
           <LinkItem
             label="Docs"
-            icon={<IconPencil style={{ width: rem(14), height: rem(14) }} stroke={1.5} />}
+            icon={<IconPencil size={14} stroke={1.5} />}
             link={`${DOCS_BASE}/${meta.docs}`}
           >
             Edit this page
@@ -94,13 +88,13 @@ export function MdxPageHeader({ meta }: MdxPageHeaderProps) {
         {meta.license && (
           <LinkItem
             label="License"
-            icon={<IconLicense style={{ width: rem(14), height: rem(14) }} stroke={1.5} />}
+            icon={<IconLicense size={14} stroke={1.5} />}
             link="https://github.com/mantinedev/mantine/blob/master/LICENSE"
           >
             MIT
           </LinkItem>
         )}
-      </Box>
+      </div>
     </div>
   );
 }

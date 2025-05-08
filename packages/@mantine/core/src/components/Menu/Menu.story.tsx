@@ -92,9 +92,7 @@ export function Usage() {
 
         <Menu.Dropdown>
           <Menu.Label>Label 1</Menu.Label>
-          <Menu.Item component="a" href="https://google.com">
-            Link item
-          </Menu.Item>
+          <Menu.Item>Item 1</Menu.Item>
           <Menu.Item closeMenuOnClick={false}>Won&apos;t close on click</Menu.Item>
           <Menu.Item disabled>Disabled</Menu.Item>
 
@@ -207,6 +205,44 @@ export function WithKeepMounted() {
         <Input />
         <Input />
       </form>
+    </div>
+  );
+}
+
+export function WithSubMenu() {
+  return (
+    <div style={{ padding: 400 }}>
+      <Menu width={200} position="bottom-start">
+        <Menu.Target>
+          <Button>Toggle menu</Button>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Item>Item 1</Menu.Item>
+          <Menu.Item>Item 2</Menu.Item>
+          <Menu.Sub closeDelay={100}>
+            <Menu.Sub.Target>
+              <Menu.Sub.Item>Sub Menu item</Menu.Sub.Item>
+            </Menu.Sub.Target>
+
+            <Menu.Sub.Dropdown>
+              <Menu.Item closeMenuOnClick={false}>Sub 1</Menu.Item>
+              <Menu.Item closeMenuOnClick={false}>Sub 2</Menu.Item>
+              <Menu.Sub closeDelay={100}>
+                <Menu.Sub.Target>
+                  <Menu.Sub.Item>Sub Menu item</Menu.Sub.Item>
+                </Menu.Sub.Target>
+
+                <Menu.Sub.Dropdown>
+                  <Menu.Item closeMenuOnClick={false}>Sub 1</Menu.Item>
+                  <Menu.Item closeMenuOnClick={false}>Sub 2</Menu.Item>
+                </Menu.Sub.Dropdown>
+              </Menu.Sub>
+            </Menu.Sub.Dropdown>
+          </Menu.Sub>
+          <Menu.Item>Item 3</Menu.Item>
+          <Menu.Item>Item 4</Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </div>
   );
 }

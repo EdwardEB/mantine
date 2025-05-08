@@ -10,9 +10,7 @@ import {
 } from '@mantine/core';
 import { useDatesState } from '../../hooks';
 import { CalendarLevel, DatePickerType, PickerBaseProps } from '../../types';
-import { shiftTimezone } from '../../utils';
 import { Calendar, CalendarBaseProps, CalendarSettings, CalendarStylesNames } from '../Calendar';
-import { useDatesContext } from '../DatesProvider';
 import { DecadeLevelBaseSettings } from '../DecadeLevel';
 import { MonthLevelBaseSettings } from '../MonthLevel';
 import { YearLevelBaseSettings } from '../YearLevel';
@@ -26,13 +24,13 @@ export interface DatePickerBaseProps<Type extends DatePickerType = 'default'>
     MonthLevelBaseSettings,
     CalendarBaseProps,
     Omit<CalendarSettings, 'hasNextLevel'> {
-  /** Max level that user can go up to (decade, year, month), defaults to decade */
+  /** Max level that user can go up to, `'decade'` by default */
   maxLevel?: CalendarLevel;
 
-  /** Initial level displayed to the user (decade, year, month), used for uncontrolled component */
+  /** Initial displayed level (uncontrolled) */
   defaultLevel?: CalendarLevel;
 
-  /** Current level displayed to the user (decade, year, month), used for controlled component */
+  /** Current displayed level (controlled) */
   level?: CalendarLevel;
 
   /** Called when level changes */
@@ -82,7 +80,6 @@ export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_prop
     hideOutsideDates,
     __onDayMouseEnter,
     __onDayClick,
-    __timezoneApplied,
     ...others
   } = props;
 
@@ -95,7 +92,6 @@ export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_prop
     defaultValue,
     onChange: onChange as any,
     onMouseLeave,
-    applyTimezone: !__timezoneApplied,
   });
 
   const { resolvedClassNames, resolvedStyles } = useResolvedStylesApi<DatePickerFactory>({
@@ -103,7 +99,6 @@ export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_prop
     styles,
     props,
   });
-  const ctx = useDatesContext();
 
   return (
     <Calendar
@@ -128,8 +123,6 @@ export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_prop
         ...getDayProps?.(date),
       })}
       {...others}
-      date={shiftTimezone('add', others.date, ctx.getTimezone(), __timezoneApplied)}
-      __timezoneApplied
     />
   );
 }) as any;

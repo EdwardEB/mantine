@@ -122,6 +122,9 @@ export * as DatesProviderDemos from './demos/dates/DatesProvider';
 export * as DateTimePickerDemos from './demos/dates/DateTimePicker';
 export * as DateInputDemos from './demos/dates/DateInput';
 export * as CalendarDemos from './demos/dates/Calendar';
+export * as TimePickerDemos from './demos/dates/TimePicker';
+export * as TimeValueDemos from './demos/dates/TimeValue';
+export * as TimeGridDemos from './demos/dates/TimeGrid';
 
 // @mantine/charts
 export * as AreaChartDemos from './demos/charts/AreaChart';
@@ -136,6 +139,7 @@ export * as BubbleChartDemos from './demos/charts/BubbleChart';
 export * as CompositeChartDemos from './demos/charts/CompositeChart';
 export * as RadialBarChartDemos from './demos/charts/RadialBarChart';
 export * as FunnelChartDemos from './demos/charts/FunnelChart';
+export * as HeatmapDemos from './demos/charts/Heatmap';
 
 // Extensions demos
 export * as NotificationsDemos from './demos/notifications';

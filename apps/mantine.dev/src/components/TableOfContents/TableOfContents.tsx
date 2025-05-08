@@ -1,14 +1,15 @@
 import { useRouter } from 'next/router';
-import { IconList } from '@tabler/icons-react';
-import { Box, rem, ScrollArea, Text } from '@mantine/core';
+import { IconPencil } from '@tabler/icons-react';
+import { Box, ScrollArea, Space, Text } from '@mantine/core';
 import { useScrollSpy } from '@mantine/hooks';
 import classes from './TableOfContents.module.css';
 
 interface TableOfContentsProps {
   withTabs: boolean;
+  editPageLink?: string;
 }
 
-export function TableOfContents({ withTabs }: TableOfContentsProps) {
+export function TableOfContents({ withTabs, editPageLink }: TableOfContentsProps) {
   const router = useRouter();
   const spy = useScrollSpy({
     selector: '#mdx [data-heading]',
@@ -23,10 +24,9 @@ export function TableOfContents({ withTabs }: TableOfContentsProps) {
   }
 
   const items = filteredHeadings.map((heading, index) => (
-    <Text<'a'>
+    <Text
       key={heading.id}
       component="a"
-      fz="sm"
       className={classes.link}
       mod={{ active: spy.active === index }}
       href={`#${heading.id}`}
@@ -44,12 +44,17 @@ export function TableOfContents({ withTabs }: TableOfContentsProps) {
     <Box component="nav" mod={{ 'with-tabs': withTabs }} className={classes.wrapper}>
       <div className={classes.inner}>
         <div>
-          <div className={classes.header}>
-            <IconList style={{ width: rem(20), height: rem(20) }} stroke={1.5} />
-            <Text className={classes.title}>Table of contents</Text>
-          </div>
-          <ScrollArea.Autosize mah={`calc(100vh - ${rem(140)})`} type="never" offsetScrollbars>
+          <Text className={classes.title}>Table of contents</Text>
+          <ScrollArea.Autosize mah="calc(100vh - 172px)" type="never">
             <div className={classes.items}>{items}</div>
+
+            {editPageLink && (
+              <Text component="a" className={classes.editPage} href={editPageLink} target="_blank">
+                <IconPencil className={classes.editPageIcon} size={18} stroke={1.5} />
+                <span>Edit this page</span>
+              </Text>
+            )}
+            <Space h="xl" />
           </ScrollArea.Autosize>
         </div>
       </div>

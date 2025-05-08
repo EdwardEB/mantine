@@ -1,27 +1,28 @@
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/dropzone/styles.css';
-import '@mantinex/shiki/styles.css';
+import '@mantine/code-highlight/styles.css';
 import '@mantinex/demo/styles.css';
 import '@mantinex/mantine-logo/styles.css';
 import '@mantinex/mantine-header/styles.css';
-import '../fonts/GreycliffCF/styles.css';
 
 import Head from 'next/head';
+import { CodeHighlightAdapterProvider, createShikiAdapter } from '@mantine/code-highlight';
 import { MantineProvider } from '@mantine/core';
-import { ShikiProvider } from '@mantinex/shiki';
 import { Shell } from '../components/Shell';
 import { theme } from '../theme';
 
 async function loadShiki() {
-  const { getHighlighter } = await import('shiki');
-  const shiki = await getHighlighter({
+  const { createHighlighter } = await import('shiki');
+  const shiki = await createHighlighter({
     langs: ['tsx', 'scss', 'html', 'bash', 'json'],
     themes: [],
   });
 
   return shiki;
 }
+
+const shikiAdapter = createShikiAdapter(loadShiki);
 
 export default function App({ Component, pageProps }: any) {
   const title = 'Help Center | Mantine';
@@ -68,9 +69,9 @@ export default function App({ Component, pageProps }: any) {
         />
       </Head>
       <Shell>
-        <ShikiProvider loadShiki={loadShiki}>
+        <CodeHighlightAdapterProvider adapter={shikiAdapter}>
           <Component {...pageProps} />
-        </ShikiProvider>
+        </CodeHighlightAdapterProvider>
       </Shell>
     </MantineProvider>
   );

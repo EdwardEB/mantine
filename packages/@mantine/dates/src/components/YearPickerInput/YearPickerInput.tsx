@@ -11,9 +11,8 @@ import {
 } from '@mantine/core';
 import { useDatesInput } from '../../hooks';
 import { DatePickerType } from '../../types';
-import { getDefaultClampedDate, shiftTimezone } from '../../utils';
+import { getDefaultClampedDate } from '../../utils';
 import { pickCalendarProps } from '../Calendar';
-import { useDatesContext } from '../DatesProvider';
 import { DateInputSharedProps, PickerInputBase } from '../PickerInputBase';
 import { YearPicker, YearPickerBaseProps, YearPickerStylesNames } from '../YearPicker';
 
@@ -24,7 +23,7 @@ export interface YearPickerInputProps<Type extends DatePickerType = 'default'>
     DateInputSharedProps,
     YearPickerBaseProps<Type>,
     StylesApiProps<YearPickerInputFactory> {
-  /** Dayjs format to display input value, "YYYY" by default  */
+  /** day format to display input value, `"YYYY"` by default  */
   valueFormat?: string;
 }
 
@@ -82,7 +81,6 @@ export const YearPickerInput: YearPickerInputComponent = factory<YearPickerInput
     });
 
     const { calendarProps, others } = pickCalendarProps(rest);
-    const ctx = useDatesContext();
 
     const {
       _value,
@@ -133,9 +131,8 @@ export const YearPickerInput: YearPickerInputComponent = factory<YearPickerInput
           defaultDate={
             calendarProps.defaultDate ||
             (Array.isArray(_value)
-              ? _value[0] ||
-                getDefaultClampedDate({ maxDate, minDate, timezone: ctx.getTimezone() })
-              : _value || getDefaultClampedDate({ maxDate, minDate, timezone: ctx.getTimezone() }))
+              ? _value[0] || getDefaultClampedDate({ maxDate, minDate })
+              : _value || getDefaultClampedDate({ maxDate, minDate }))
           }
           onChange={setValue}
           locale={locale}
@@ -146,8 +143,6 @@ export const YearPickerInput: YearPickerInputComponent = factory<YearPickerInput
           __stopPropagation={dropdownType === 'popover'}
           minDate={minDate}
           maxDate={maxDate}
-          date={shiftTimezone('add', calendarProps.date, ctx.getTimezone())}
-          __timezoneApplied
         />
       </PickerInputBase>
     );

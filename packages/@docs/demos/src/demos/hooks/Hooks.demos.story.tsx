@@ -108,6 +108,11 @@ export const Demo_useHotkeysDemo = {
   render: renderDemo(demos.useHotkeysDemo),
 };
 
+export const Demo_useHotkeysDemoIndex = {
+  name: '⭐ Demo: useHotkeysDemoIndex',
+  render: renderDemo(demos.useHotkeysDemoIndex),
+};
+
 export const Demo_useHoverDemo = {
   name: '⭐ Demo: useHoverDemo',
   render: renderDemo(demos.useHoverDemo),
@@ -301,6 +306,11 @@ export const Demo_useSetUsage = {
 export const Demo_useDebouncedCallbackUsage = {
   name: '⭐ Demo: useDebouncedCallbackUsage',
   render: renderDemo(demos.useDebouncedCallbackUsage),
+};
+
+export const Demo_useDebouncedCallbackUnmount = {
+  name: '⭐ Demo: useDebouncedCallbackUnmount',
+  render: renderDemo(demos.useDebouncedCallbackUnmount),
 };
 
 export const Demo_useThrottledStateUsage = {

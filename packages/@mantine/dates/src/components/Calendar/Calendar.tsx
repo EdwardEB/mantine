@@ -11,9 +11,8 @@ import {
 } from '@mantine/core';
 import { useUncontrolled } from '@mantine/hooks';
 import { useUncontrolledDates } from '../../hooks';
-import { CalendarLevel } from '../../types';
-import { shiftTimezone } from '../../utils';
-import { useDatesContext } from '../DatesProvider';
+import { CalendarLevel, DateStringValue } from '../../types';
+import { toDateString } from '../../utils';
 import { DecadeLevelSettings } from '../DecadeLevel';
 import { DecadeLevelGroup, DecadeLevelGroupStylesNames } from '../DecadeLevelGroup';
 import { MonthLevelSettings } from '../MonthLevel';
@@ -54,33 +53,30 @@ export interface CalendarSettings
   extends Omit<DecadeLevelSettings, OmittedSettings>,
     Omit<YearLevelSettings, OmittedSettings>,
     Omit<MonthLevelSettings, OmittedSettings> {
-  /** Initial level displayed to the user (decade, year, month), used for uncontrolled component */
+  /** Initial displayed level in uncontrolled mode */
   defaultLevel?: CalendarLevel;
 
-  /** Current level displayed to the user (decade, year, month), used for controlled component */
+  /** Current displayed level displayed in controlled mode */
   level?: CalendarLevel;
 
   /** Called when level changes */
   onLevelChange?: (level: CalendarLevel) => void;
 
-  /** Called when user clicks year on decade level */
-  onYearSelect?: (date: Date) => void;
+  /** Called when user selects year */
+  onYearSelect?: (date: DateStringValue) => void;
 
-  /** Called when user clicks month on year level */
-  onMonthSelect?: (date: Date) => void;
+  /** Called when user selects month */
+  onMonthSelect?: (date: DateStringValue) => void;
 
   /** Called when mouse enters year control */
-  onYearMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: Date) => void;
+  onYearMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 
   /** Called when mouse enters month control */
-  onMonthMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: Date) => void;
+  onMonthMouseEnter?: (event: React.MouseEvent<HTMLButtonElement>, date: DateStringValue) => void;
 }
 
 export interface CalendarBaseProps {
   __staticSelector?: string;
-
-  /** Internal Variable to check if timezones were applied by parent component */
-  __timezoneApplied?: boolean;
 
   /** Prevents focus shift when buttons are clicked */
   __preventFocus?: boolean;
@@ -91,47 +87,47 @@ export interface CalendarBaseProps {
   /** Determines whether date should be updated when month control is clicked */
   __updateDateOnMonthSelect?: boolean;
 
-  /** Initial date that is displayed, used for uncontrolled component */
-  defaultDate?: Date;
+  /** Initial displayed date in uncontrolled mode */
+  defaultDate?: DateStringValue | Date;
 
-  /** Date that is displayed, used for controlled component */
-  date?: Date;
+  /** Displayed date in controlled mode */
+  date?: DateStringValue | Date;
 
   /** Called when date changes */
-  onDateChange?: (date: Date) => void;
+  onDateChange?: (date: DateStringValue) => void;
 
-  /** Number of columns to render next to each other */
+  /** Number of columns displayed next to each other, `1` by default */
   numberOfColumns?: number;
 
-  /** Number of columns to scroll when user clicks next/prev buttons, defaults to numberOfColumns */
+  /** Number of columns to scroll with next/prev buttons, same as `numberOfColumns` if not set explicitly */
   columnsToScroll?: number;
 
-  /** Aria-label attributes for controls on different levels */
+  /** `aria-label` attributes for controls on different levels */
   ariaLabels?: CalendarAriaLabels;
 
-  /** Arial-label for next button */
+  /** Next button `aria-label` */
   nextLabel?: string;
 
-  /** Arial-label for previous button */
+  /** Previous button `aria-label` */
   previousLabel?: string;
 
-  /** Called when next decade button is clicked */
-  onNextDecade?: (date: Date) => void;
+  /** Called when the next decade button is clicked */
+  onNextDecade?: (date: DateStringValue) => void;
 
-  /** Called when previous decade button is clicked */
-  onPreviousDecade?: (date: Date) => void;
+  /** Called when the previous decade button is clicked */
+  onPreviousDecade?: (date: DateStringValue) => void;
 
-  /** Called when next year button is clicked */
-  onNextYear?: (date: Date) => void;
+  /** Called when the next year button is clicked */
+  onNextYear?: (date: DateStringValue) => void;
 
-  /** Called when previous year button is clicked */
-  onPreviousYear?: (date: Date) => void;
+  /** Called when the previous year button is clicked */
+  onPreviousYear?: (date: DateStringValue) => void;
 
-  /** Called when next month button is clicked */
-  onNextMonth?: (date: Date) => void;
+  /** Called when the next month button is clicked */
+  onNextMonth?: (date: DateStringValue) => void;
 
-  /** Called when previous month button is clicked */
-  onPreviousMonth?: (date: Date) => void;
+  /** Called when the previous month button is clicked */
+  onPreviousMonth?: (date: DateStringValue) => void;
 }
 
 export interface CalendarProps
@@ -166,7 +162,8 @@ const defaultProps: Partial<CalendarProps> = {
 export const Calendar = factory<CalendarFactory>((_props, ref) => {
   const props = useProps('Calendar', defaultProps, _props);
   const {
-    vars, // CalendarLevel props
+    // CalendarLevel props
+    vars,
     maxLevel,
     minLevel,
     defaultLevel,
@@ -234,7 +231,6 @@ export const Calendar = factory<CalendarFactory>((_props, ref) => {
     onNextMonth,
     onPreviousMonth,
     static: isStatic,
-    __timezoneApplied,
     ...others
   } = props;
 
@@ -253,10 +249,9 @@ export const Calendar = factory<CalendarFactory>((_props, ref) => {
 
   const [_date, setDate] = useUncontrolledDates({
     type: 'default',
-    value: date,
-    defaultValue: defaultDate,
+    value: toDateString(date),
+    defaultValue: toDateString(defaultDate),
     onChange: onDateChange as any,
-    applyTimezone: !__timezoneApplied,
   });
 
   const stylesApiProps = {
@@ -267,34 +262,33 @@ export const Calendar = factory<CalendarFactory>((_props, ref) => {
     size,
   };
 
-  const ctx = useDatesContext();
-
   const _columnsToScroll = columnsToScroll || numberOfColumns || 1;
 
   const now = new Date();
-  const fallbackDate = minDate && minDate > now ? minDate : now;
-  const currentDate = _date || shiftTimezone('add', fallbackDate, ctx.getTimezone());
+  const fallbackDate =
+    minDate && dayjs(now).isAfter(minDate) ? minDate : dayjs(now).format('YYYY-MM-DD');
+  const currentDate = _date || fallbackDate;
 
   const handleNextMonth = () => {
-    const nextDate = dayjs(currentDate).add(_columnsToScroll, 'month').toDate();
+    const nextDate = dayjs(currentDate).add(_columnsToScroll, 'month').format('YYYY-MM-DD');
     onNextMonth?.(nextDate);
     setDate(nextDate);
   };
 
   const handlePreviousMonth = () => {
-    const nextDate = dayjs(currentDate).subtract(_columnsToScroll, 'month').toDate();
+    const nextDate = dayjs(currentDate).subtract(_columnsToScroll, 'month').format('YYYY-MM-DD');
     onPreviousMonth?.(nextDate);
     setDate(nextDate);
   };
 
   const handleNextYear = () => {
-    const nextDate = dayjs(currentDate).add(_columnsToScroll, 'year').toDate();
+    const nextDate = dayjs(currentDate).add(_columnsToScroll, 'year').format('YYYY-MM-DD');
     onNextYear?.(nextDate);
     setDate(nextDate);
   };
 
   const handlePreviousYear = () => {
-    const nextDate = dayjs(currentDate).subtract(_columnsToScroll, 'year').toDate();
+    const nextDate = dayjs(currentDate).subtract(_columnsToScroll, 'year').format('YYYY-MM-DD');
     onPreviousYear?.(nextDate);
     setDate(nextDate);
   };
@@ -302,7 +296,7 @@ export const Calendar = factory<CalendarFactory>((_props, ref) => {
   const handleNextDecade = () => {
     const nextDate = dayjs(currentDate)
       .add(10 * _columnsToScroll, 'year')
-      .toDate();
+      .format('YYYY-MM-DD');
     onNextDecade?.(nextDate);
     setDate(nextDate);
   };
@@ -310,7 +304,7 @@ export const Calendar = factory<CalendarFactory>((_props, ref) => {
   const handlePreviousDecade = () => {
     const nextDate = dayjs(currentDate)
       .subtract(10 * _columnsToScroll, 'year')
-      .toDate();
+      .format('YYYY-MM-DD');
     onPreviousDecade?.(nextDate);
     setDate(nextDate);
   };

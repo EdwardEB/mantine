@@ -1,52 +1,44 @@
-import Head from 'next/head';
-import { Footer } from '../Footer';
+import { useMantineColorScheme } from '@mantine/core';
+import { useHotkeys } from '@mantine/hooks';
+import { DocsFooter } from '../DocsFooter';
 import { Shell } from '../Shell';
-import { Banner } from './Banner/Banner';
-import { Components } from './Components/Components';
-import { CustomizeStyles } from './CustomizeStyles/CustomizeStyles';
-import { CustomizeWithProps } from './CustomizeWithProps/CustomizeWithProps';
-import { DarkTheme } from './DarkTheme/DarkTheme';
-import { Hooks } from './Hooks/Hooks';
-import { JoinCommunity } from './JoinCommunity/JoinCommunity';
-import { Jumbotron } from './Jumbotron/Jumbotron';
-import { Reviews } from './Reviews/Reviews';
-import { Sponsors } from './Sponsors/Sponsors';
-import { Theming } from './Theming/Theming';
-import { Usage } from './Usage/Usage';
-import { Waves } from './Waves/Waves';
+import { HomePageCombobox } from './HomePageCombobox/HomePageCombobox';
+import { HomePageCommunity } from './HomePageCommunity/HomePageCommunity';
+import { HomePageComponents } from './HomePageComponents/HomePageComponents';
+import { HomePageDarkColorScheme } from './HomePageDarkColorScheme/HomePageDarkColorScheme';
+import { HomePageExtensions } from './HomePageExtensions/HomePageExtensions';
+import { HomePageForm } from './HomePageForm/HomePageForm';
+import { HomePageGetStarted } from './HomePageGetStarted/HomePageGetStarted';
+import { HomePageHooks } from './HomePageHooks/HomePageHooks';
+import { HomePageJoin } from './HomePageJoin/HomePageJoin';
+import { HomePageJumbotron } from './HomePageJumbotron/HomePageJumbotron';
+import { HomePageSponsors } from './HomePageSponsors/HomePageSponsors';
+import { HomePageStyles } from './HomePageStyles/HomePageStyles';
+import { HomePageUI } from './HomePageUI/HomePageUI';
 import classes from './HomePage.module.css';
 
 export function HomePage() {
+  const { toggleColorScheme } = useMantineColorScheme();
+  useHotkeys([['mod+j', () => toggleColorScheme()]]);
+
   return (
-    <>
-      <Head>
-        <title>Mantine</title>
-      </Head>
-      <Shell mobileNavbarOnly>
-        <div className={classes.root}>
-          <Jumbotron />
-          <Sponsors />
-          <Waves height={40} width={150} />
-          <Components />
-          <Waves height={42} width={220} rotate flip alt />
-          <DarkTheme />
-          <Waves height={28} width={200} rotate />
-          <CustomizeWithProps />
-          <Waves height={36} width={110} alt flip />
-          <CustomizeStyles />
-          <Waves height={44} width={148} />
-          <Theming />
-          <Banner />
-          <Hooks />
-          <Waves height={42} width={280} rotate flip />
-          <Reviews />
-          <Waves height={58} width={160} alt />
-          <Usage />
-          <Waves height={48} width={180} flip />
-          <JoinCommunity />
-        </div>
-        <Footer />
-      </Shell>
-    </>
+    <Shell withNavbar={false} fluid withNav={false}>
+      <div className={classes.root}>
+        <HomePageJumbotron />
+        <HomePageSponsors />
+        <HomePageComponents />
+        <HomePageHooks />
+        <HomePageStyles />
+        <HomePageDarkColorScheme />
+        <HomePageCombobox />
+        <HomePageExtensions />
+        <HomePageForm />
+        <HomePageUI />
+        <HomePageCommunity />
+        <HomePageJoin />
+        <HomePageGetStarted />
+      </div>
+      <DocsFooter withNavbar={false} />
+    </Shell>
   );
 }

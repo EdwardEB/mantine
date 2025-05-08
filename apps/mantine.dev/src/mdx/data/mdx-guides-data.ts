@@ -22,14 +22,6 @@ export const MDX_GUIDES_DATA: Record<string, Frontmatter> = {
     hideHeader: true,
   },
 
-  Remix: {
-    title: 'Usage with Remix',
-    slug: '/guides/remix',
-    search: 'Get started with Remix',
-    hideInSearch: true,
-    hideHeader: true,
-  },
-
   ReactRouter: {
     title: 'Usage with React Router',
     slug: '/guides/react-router',
@@ -98,6 +90,14 @@ export const MDX_GUIDES_DATA: Record<string, Frontmatter> = {
     slug: '/guides/6x-to-7x',
     search: 'Styles migration guide from 6.x to 7.x',
     hideHeader: true,
+  },
+
+  SevenToEight: {
+    title: '7.x to 8.x migration',
+    slug: '/guides/7x-to-8x',
+    search: 'Migration guide from 7.x to 8.x',
+    hideHeader: true,
+    searchTags: '7x, 8x, 7to8, 78',
   },
 
   FunctionsReference: {

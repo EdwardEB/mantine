@@ -1,6 +1,6 @@
 {
   "name": "@mantinex/demo",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Demo base components used on *.mantine.dev websites",
   "homepage": "https://mantine.dev/",
   "license": "MIT",
@@ -35,21 +35,21 @@
     "directory": "packages/@mantinex/demo"
   },
   "peerDependencies": {
+    "@mantine/code-highlight": ">=7.0.0",
     "@mantine/core": ">=7.0.0",
     "@mantine/hooks": ">=7.0.0",
     "@mantinex/dev-icons": ">=1.0.0",
-    "@mantinex/shiki": ">=1.0.0",
     "react": "^18.x || ^19.x",
     "react-dom": "^18.x || ^19.x",
-    "shiki": "^1.23.1"
+    "shiki": "^3.1.0"
   },
   "devDependencies": {
     "@mantine-tests/core": "workspace:*",
+    "@mantine/code-highlight": "workspace:*",
     "@mantine/core": "workspace:*",
     "@mantine/hooks": "workspace:*",
-    "@mantinex/shiki": "workspace:*",
-    "react": "^19.0.0",
+    "react": "19.0.0",
     "react-dom": "19.0.0",
-    "shiki": "^1.23.1"
+    "shiki": "^3.1.0"
   }
 }

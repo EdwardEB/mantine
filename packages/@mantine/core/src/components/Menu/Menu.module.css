@@ -40,7 +40,7 @@
     cursor: not-allowed;
   }
 
-  &:where([data-hovered]) {
+  &:where(:hover, :focus) {
     &:where(:not(:disabled, [data-disabled])) {
       @mixin where-light {
         background-color: var(--menu-item-hover, var(--mantine-color-gray-1));
@@ -50,6 +50,10 @@
         background-color: var(--menu-item-hover, var(--mantine-color-dark-4));
       }
     }
+  }
+
+  &:where([data-sub-menu-item]) {
+    padding-inline-end: 5px;
   }
 }
 
@@ -68,5 +72,13 @@
 
   &:where([data-position='right']) {
     margin-inline-start: var(--mantine-spacing-xs);
+  }
+}
+
+.chevron {
+  transform: rotate(-90deg);
+
+  @mixin where-rtl {
+    transform: rotate(90deg);
   }
 }

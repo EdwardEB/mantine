@@ -1,15 +1,16 @@
-import { shiftTimezone } from '../../../utils';
+import dayjs from 'dayjs';
+import { DateStringValue } from '../../../types';
 
-export function dateStringParser(dateString: string | null, timezone?: string) {
+export function dateStringParser(dateString: string | null): DateStringValue | null {
   if (dateString === null) {
     return null;
   }
 
-  const date = shiftTimezone('add', new Date(dateString), timezone);
+  const date = new Date(dateString);
 
   if (Number.isNaN(date.getTime()) || !dateString) {
     return null;
   }
 
-  return date;
+  return dayjs(date).format('YYYY-MM-DD');
 }

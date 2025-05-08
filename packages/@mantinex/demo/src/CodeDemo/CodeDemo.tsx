@@ -14,6 +14,8 @@ export function CodeDemo({
   minHeight,
   dimmed,
   striped,
+  maxCollapsedHeight,
+  overflow,
 }: CodeDemoProps) {
   return (
     <DemoRoot>
@@ -24,10 +26,15 @@ export function CodeDemo({
         minHeight={minHeight}
         dimmed={dimmed}
         striped={striped}
+        overflow={overflow}
       >
         {children}
       </DemoArea>
-      <DemoCode code={code} defaultExpanded={defaultExpanded} />
+      <DemoCode
+        code={code}
+        defaultExpanded={defaultExpanded}
+        maxCollapsedHeight={maxCollapsedHeight}
+      />
     </DemoRoot>
   );
 }

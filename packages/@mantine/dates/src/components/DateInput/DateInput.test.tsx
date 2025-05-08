@@ -14,7 +14,6 @@ import {
   expectOpenedPopover,
   expectValue,
 } from '@mantine-tests/dates';
-import { DatesProvider } from '../DatesProvider';
 import { DateInput, DateInputProps } from './DateInput';
 
 const defaultProps: DateInputProps = {
@@ -72,7 +71,7 @@ describe('@mantine/dates/DateInput', () => {
 
   datesTests.itSupportsClearableProps({
     component: DateInput,
-    props: { defaultValue: new Date(2022, 3, 11) },
+    props: { defaultValue: '2022-04-11' },
   });
 
   datesTests.itSupportsYearsListProps({
@@ -80,7 +79,7 @@ describe('@mantine/dates/DateInput', () => {
     props: {
       ...defaultProps,
       defaultLevel: 'decade',
-      defaultValue: new Date(2022, 3, 11),
+      defaultValue: '2022-04-11',
       popoverProps: { opened: true, withinPortal: false, transitionProps: { duration: 0 } },
     },
   });
@@ -90,7 +89,7 @@ describe('@mantine/dates/DateInput', () => {
     props: {
       ...defaultProps,
       defaultLevel: 'year',
-      defaultValue: new Date(2022, 3, 11),
+      defaultValue: '2022-04-11',
       popoverProps: { opened: true, withinPortal: false, transitionProps: { duration: 0 } },
     },
   });
@@ -144,59 +143,25 @@ describe('@mantine/dates/DateInput', () => {
   });
 
   it('supports uncontrolled state (dropdown click)', async () => {
-    const { container } = render(<DateInput date={new Date(2022, 3, 11)} {...defaultProps} />);
+    const { container } = render(<DateInput date="2022-04-11" {...defaultProps} />);
     await userEvent.tab();
     await clickControl(container, 4);
     expectValue(container, 'April 1, 2022');
   });
 
-  it('supports uncontrolled state (dropdown click) with timezone', async () => {
-    const { container } = render(
-      <DatesProvider settings={{ timezone: 'UTC' }}>
-        <DateInput date={new Date(2022, 0, 31, 23)} {...defaultProps} />
-      </DatesProvider>
-    );
-    await userEvent.tab();
-    await clickControl(container, 4);
-    expectValue(container, 'February 4, 2022');
-  });
-
   it('supports controlled state (dropdown click)', async () => {
     const spy = jest.fn();
     const { container } = render(
-      <DateInput
-        {...defaultProps}
-        date={new Date(2022, 3, 11)}
-        value={new Date(2022, 3, 11)}
-        onChange={spy}
-      />
+      <DateInput {...defaultProps} date="2022-04-11" value="2022-04-11" onChange={spy} />
     );
     await userEvent.tab();
     await clickControl(container, 4);
     expectValue(container, 'April 11, 2022');
-    expect(spy).toHaveBeenCalledWith(new Date(2022, 3, 1));
-  });
-
-  it('supports controlled state (dropdown click) with timezone', async () => {
-    const spy = jest.fn();
-    const { container } = render(
-      <DatesProvider settings={{ timezone: 'UTC' }}>
-        <DateInput
-          {...defaultProps}
-          date={new Date(2022, 0, 31, 23)}
-          value={new Date(2022, 0, 31, 23)}
-          onChange={spy}
-        />
-      </DatesProvider>
-    );
-    await userEvent.tab();
-    await clickControl(container, 4);
-    expectValue(container, 'February 1, 2022');
-    expect(spy).toHaveBeenCalledWith(new Date(2022, 1, 3, 23));
+    expect(spy).toHaveBeenCalledWith('2022-04-01');
   });
 
   it('supports uncontrolled state (free input)', async () => {
-    const { container } = render(<DateInput date={new Date(2022, 3, 11)} {...defaultProps} />);
+    const { container } = render(<DateInput date="2022-04-11" {...defaultProps} />);
     await userEvent.tab();
     await userEvent.type(getInput(container), 'April 1, 2022');
     await userEvent.tab();
@@ -205,30 +170,13 @@ describe('@mantine/dates/DateInput', () => {
 
   it('supports controlled state (free input)', async () => {
     const spy = jest.fn();
-    const { container } = render(
-      <DateInput {...defaultProps} value={new Date(2022, 3, 11)} onChange={spy} />
-    );
+    const { container } = render(<DateInput {...defaultProps} value="2022-04-11" onChange={spy} />);
     await userEvent.tab();
     await userEvent.clear(getInput(container));
     await userEvent.type(getInput(container), 'April 1, 2022');
     await userEvent.tab();
     expectValue(container, 'April 11, 2022');
-    expect(spy).toHaveBeenLastCalledWith(new Date(2022, 3, 1));
-  });
-
-  it('supports controlled state (free input) with timezone', async () => {
-    const spy = jest.fn();
-    const { container } = render(
-      <DatesProvider settings={{ timezone: 'UTC' }}>
-        <DateInput {...defaultProps} value={new Date(2022, 3, 11)} onChange={spy} />
-      </DatesProvider>
-    );
-    await userEvent.tab();
-    await userEvent.clear(getInput(container));
-    await userEvent.type(getInput(container), 'April 1, 2022');
-    await userEvent.tab();
-    expectValue(container, 'April 11, 2022');
-    expect(spy).toHaveBeenLastCalledWith(new Date(2022, 2, 31, 20));
+    expect(spy).toHaveBeenLastCalledWith('2022-04-01');
   });
 
   it('clears input when clear button is clicked (uncontrolled)', async () => {
@@ -236,7 +184,7 @@ describe('@mantine/dates/DateInput', () => {
       <DateInput
         {...defaultProps}
         clearable
-        defaultValue={new Date(2022, 3, 11)}
+        defaultValue="2022-04-11"
         clearButtonProps={{ 'aria-label': 'clear-button' }}
       />
     );
@@ -252,7 +200,7 @@ describe('@mantine/dates/DateInput', () => {
       <DateInput
         {...defaultProps}
         clearable
-        value={new Date(2022, 3, 11)}
+        value="2022-04-11"
         onChange={spy}
         clearButtonProps={{ 'aria-label': 'clear-button' }}
       />
@@ -266,7 +214,7 @@ describe('@mantine/dates/DateInput', () => {
 
   it('allows to clear input value when clearable is set (uncontrolled)', async () => {
     const { container } = render(
-      <DateInput {...defaultProps} clearable defaultValue={new Date(2022, 3, 11)} />
+      <DateInput {...defaultProps} clearable defaultValue="2022-04-11" />
     );
 
     expectValue(container, 'April 11, 2022');
@@ -278,7 +226,7 @@ describe('@mantine/dates/DateInput', () => {
   it('allows to clear input value when clearable is set (controlled)', async () => {
     const spy = jest.fn();
     const { container } = render(
-      <DateInput {...defaultProps} clearable value={new Date(2022, 3, 11)} onChange={spy} />
+      <DateInput {...defaultProps} clearable value="2022-04-11" onChange={spy} />
     );
 
     expectValue(container, 'April 11, 2022');
@@ -290,7 +238,7 @@ describe('@mantine/dates/DateInput', () => {
 
   it('does not allow to clear input value when clearable is not set (uncontrolled)', async () => {
     const { container } = render(
-      <DateInput {...defaultProps} clearable={false} defaultValue={new Date(2022, 3, 11)} />
+      <DateInput {...defaultProps} clearable={false} defaultValue="2022-04-11" />
     );
 
     expectValue(container, 'April 11, 2022');
@@ -302,7 +250,7 @@ describe('@mantine/dates/DateInput', () => {
   it('does not allow to clear input value when clearable is not set (controlled)', async () => {
     const spy = jest.fn();
     const { container } = render(
-      <DateInput {...defaultProps} clearable={false} value={new Date(2022, 3, 11)} onChange={spy} />
+      <DateInput {...defaultProps} clearable={false} value="2022-04-11" onChange={spy} />
     );
 
     expectValue(container, 'April 11, 2022');
@@ -314,7 +262,7 @@ describe('@mantine/dates/DateInput', () => {
 
   it('allows to clear input value by clicking the selected date when clearable and allowDeselect are set (uncontrolled)', async () => {
     const { container } = render(
-      <DateInput {...defaultProps} clearable allowDeselect defaultValue={new Date(2022, 3, 1)} />
+      <DateInput {...defaultProps} clearable allowDeselect defaultValue="2022-04-01" />
     );
 
     expectValue(container, 'April 1, 2022');
@@ -326,13 +274,7 @@ describe('@mantine/dates/DateInput', () => {
   it('allows to clear input value by clicking the selected date when clearable and allowDeselect are set (controlled)', async () => {
     const spy = jest.fn();
     const { container } = render(
-      <DateInput
-        {...defaultProps}
-        clearable
-        allowDeselect
-        value={new Date(2022, 3, 1)}
-        onChange={spy}
-      />
+      <DateInput {...defaultProps} clearable allowDeselect value="2022-04-01" onChange={spy} />
     );
 
     expectValue(container, 'April 1, 2022');
@@ -344,12 +286,7 @@ describe('@mantine/dates/DateInput', () => {
 
   it('does not allow to clear input value by clicking the selected date when allowDeselect is not set (uncontrolled)', async () => {
     const { container } = render(
-      <DateInput
-        {...defaultProps}
-        clearable
-        allowDeselect={false}
-        defaultValue={new Date(2022, 3, 1)}
-      />
+      <DateInput {...defaultProps} clearable allowDeselect={false} defaultValue="2022-04-01" />
     );
 
     expectValue(container, 'April 1, 2022');
@@ -365,7 +302,7 @@ describe('@mantine/dates/DateInput', () => {
         {...defaultProps}
         clearable
         allowDeselect={false}
-        value={new Date(2022, 3, 1)}
+        value="2022-04-01"
         onChange={spy}
       />
     );
@@ -374,7 +311,7 @@ describe('@mantine/dates/DateInput', () => {
     await userEvent.tab();
     await clickControl(container, 4);
     expectValue(container, 'April 1, 2022');
-    expect(spy).toHaveBeenLastCalledWith(new Date(2022, 3, 1));
+    expect(spy).toHaveBeenLastCalledWith('2022-04-01');
   });
 
   it('calls onClick when input is clicked', async () => {
@@ -386,29 +323,24 @@ describe('@mantine/dates/DateInput', () => {
 
   it('render hidden input with given value', () => {
     const { container } = render(
-      <DateInput
-        {...defaultProps}
-        value={new Date(2022, 3, 11)}
-        name="hidden-name"
-        form="hidden-form"
-      />
+      <DateInput {...defaultProps} value="2022-04-11" name="hidden-name" form="hidden-form" />
     );
     const input = container.querySelector('input[type="hidden"]');
-    expect(input).toHaveValue(new Date(2022, 3, 11).toISOString());
+    expect(input).toHaveValue('2022-04-11');
     expect(input).toHaveAttribute('name', 'hidden-name');
     expect(input).toHaveAttribute('form', 'hidden-form');
   });
 
   it('supports custom value format', () => {
     const { container } = render(
-      <DateInput {...defaultProps} defaultValue={new Date(2022, 3, 11)} valueFormat="DD/MM/YYYY" />
+      <DateInput {...defaultProps} defaultValue="2022-04-11" valueFormat="DD/MM/YYYY" />
     );
     expectValue(container, '11/04/2022');
   });
 
   it('does not update value on blur if fixOnBlur={false}', async () => {
     const { container } = render(
-      <DateInput {...defaultProps} fixOnBlur={false} defaultValue={new Date(2022, 3, 11)} />
+      <DateInput {...defaultProps} fixOnBlur={false} defaultValue="2022-04-11" />
     );
 
     expectValue(container, 'April 11, 2022');
@@ -420,7 +352,7 @@ describe('@mantine/dates/DateInput', () => {
 
   it('updates value on blur if fixOnBlur={true}', async () => {
     const { container } = render(
-      <DateInput {...defaultProps} fixOnBlur defaultValue={new Date(2022, 3, 11)} />
+      <DateInput {...defaultProps} fixOnBlur defaultValue="2022-04-11" />
     );
 
     expectValue(container, 'April 11, 2022');
@@ -434,45 +366,13 @@ describe('@mantine/dates/DateInput', () => {
     const { container } = render(
       <DateInput
         {...defaultProps}
-        dateParser={(input) => (input === 'secret-date' ? new Date(2022, 3, 11) : null)}
+        dateParser={(input) => (input === 'secret-date' ? '2022-04-11' : null)}
       />
     );
 
     await userEvent.type(getInput(container), 'secret-date');
     await userEvent.tab();
     expectValue(container, 'April 11, 2022');
-  });
-
-  it('preserves time when new date is selected and preserveTime prop is set', async () => {
-    const { container } = render(
-      <DateInput
-        {...defaultProps}
-        defaultValue={new Date(2022, 3, 11, 14, 45, 13)}
-        valueFormat="DD/MM/YYYY HH:mm:ss"
-        preserveTime
-      />
-    );
-
-    expectValue(container, '11/04/2022 14:45:13');
-    await userEvent.tab();
-    await userEvent.click(container.querySelectorAll('table button')[6]);
-    expectValue(container, '03/04/2022 14:45:13');
-  });
-
-  it('does not preserve time when new date is selected and preserveTime prop is set to false', async () => {
-    const { container } = render(
-      <DateInput
-        {...defaultProps}
-        defaultValue={new Date(2022, 3, 11, 14, 45, 13)}
-        valueFormat="DD/MM/YYYY HH:mm:ss"
-        preserveTime={false}
-      />
-    );
-
-    expectValue(container, '11/04/2022 14:45:13');
-    await userEvent.tab();
-    await userEvent.click(container.querySelectorAll('table button')[6]);
-    expectValue(container, '03/04/2022 00:00:00');
   });
 
   it('has correct default __staticSelector', () => {

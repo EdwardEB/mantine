@@ -22,7 +22,7 @@ export function useResizeObserver<T extends HTMLElement = any>(options?: ResizeO
   const observer = useMemo(
     () =>
       typeof window !== 'undefined'
-        ? new ResizeObserver((entries: any) => {
+        ? new ResizeObserver((entries) => {
             const entry = entries[0];
 
             if (entry) {
@@ -30,7 +30,24 @@ export function useResizeObserver<T extends HTMLElement = any>(options?: ResizeO
 
               frameID.current = requestAnimationFrame(() => {
                 if (ref.current) {
-                  setRect(entry.contentRect);
+                  const boxSize = entry.borderBoxSize?.[0] || entry.contentBoxSize?.[0];
+                  if (boxSize) {
+                    const width = boxSize.inlineSize;
+                    const height = boxSize.blockSize;
+
+                    setRect({
+                      width,
+                      height,
+                      x: entry.contentRect.x,
+                      y: entry.contentRect.y,
+                      top: entry.contentRect.top,
+                      left: entry.contentRect.left,
+                      bottom: entry.contentRect.bottom,
+                      right: entry.contentRect.right,
+                    });
+                  } else {
+                    setRect(entry.contentRect);
+                  }
                 }
               });
             }

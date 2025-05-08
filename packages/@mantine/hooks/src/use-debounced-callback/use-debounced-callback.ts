@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useCallbackRef } from '../use-callback-ref/use-callback-ref';
 
-const noop = () => {};
-
 export function useDebouncedCallback<T extends (...args: any[]) => any>(
   callback: T,
   options: number | { delay: number; flushOnUnmount?: boolean }
@@ -11,6 +9,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
   const flushOnUnmount = typeof options === 'number' ? false : options.flushOnUnmount;
   const handleCallback = useCallbackRef(callback);
   const debounceTimerRef = useRef(0);
+  const flushRef = useRef(() => {});
 
   const lastCallback = Object.assign(
     useCallback(
@@ -22,12 +21,13 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
             handleCallback(...args);
           }
         };
+        flushRef.current = flush;
         lastCallback.flush = flush;
         debounceTimerRef.current = window.setTimeout(flush, delay);
       },
       [handleCallback, delay]
     ),
-    { flush: noop }
+    { flush: flushRef.current }
   );
 
   useEffect(

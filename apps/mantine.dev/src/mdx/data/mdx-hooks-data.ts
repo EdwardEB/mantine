@@ -7,7 +7,6 @@ function hDocs(hook: string, description: string): Frontmatter {
     package: '@mantine/hooks',
     slug: `/hooks/${name}`,
     description,
-    import: `import { ${hook} } from '@mantine/hooks';`,
     source: `@mantine/hooks/src/${name}/${name}.ts`,
     docs: `hooks/${name}.mdx`,
     searchTags: `${hook} ${name.split('-').join(' ')}`,
@@ -15,6 +14,13 @@ function hDocs(hook: string, description: string): Frontmatter {
 }
 
 export const MDX_HOOKS_DATA: Record<string, Frontmatter> = {
+  HooksPackage: {
+    title: 'Get started',
+    slug: '/hooks/package',
+    hideInSearch: true,
+    hideHeader: true,
+  },
+
   useClickOutside: hDocs(
     'useClickOutside',
     'Detects click and touch events outside of given element or elements group'
@@ -48,7 +54,6 @@ export const MDX_HOOKS_DATA: Record<string, Frontmatter> = {
     package: '@mantine/hooks',
     slug: '/hooks/use-element-size',
     description: 'Returns element width and height and observes changes with ResizeObserver',
-    import: "import { useElementSize } from '@mantine/hooks';",
     source: '@mantine/hooks/src/use-resize-observer/use-resize-observer.ts',
     docs: 'hooks/use-element-size.mdx',
   },

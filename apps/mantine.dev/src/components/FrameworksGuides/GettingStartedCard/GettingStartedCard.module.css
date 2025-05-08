@@ -8,6 +8,10 @@
     transform 100ms ease,
     box-shadow 100ms ease;
 
+  [data-dimmed] & {
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
+  }
+
   &[data-type='primary'] {
     height: 340px;
     padding-inline-end: 80px;
@@ -64,18 +68,7 @@
   &[data-logo='redwood'],
   &[data-logo='react-router'] {
     justify-content: flex-start;
-
-    &[data-breakpoint='xl'] {
-      @mixin smaller-than $mantine-breakpoint-xl {
-        width: 80px;
-      }
-    }
-
-    &[data-breakpoint='md'] {
-      @mixin smaller-than $mantine-breakpoint-md {
-        width: 80px;
-      }
-    }
+    width: 40px;
   }
 }
 

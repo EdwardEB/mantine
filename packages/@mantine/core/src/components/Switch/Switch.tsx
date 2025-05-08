@@ -3,6 +3,7 @@ import {
   Box,
   BoxProps,
   createVarsResolver,
+  DataAttributes,
   ElementProps,
   extractStyleProps,
   factory,
@@ -29,6 +30,7 @@ export type SwitchStylesNames =
   | 'thumb'
   | 'input'
   | InlineInputStylesNames;
+
 export type SwitchCssVariables = {
   root:
     | '--switch-radius'
@@ -66,7 +68,7 @@ export interface SwitchProps
   radius?: MantineRadius;
 
   /** Props passed down to the root element */
-  wrapperProps?: Record<string, any>;
+  wrapperProps?: React.ComponentPropsWithoutRef<'div'> & DataAttributes;
 
   /** Icon inside the thumb of the switch */
   thumbIcon?: React.ReactNode;
@@ -82,6 +84,9 @@ export interface SwitchProps
 
   /** Assigns ref of the root element */
   rootRef?: React.ForwardedRef<HTMLDivElement>;
+
+  /** If set, the indicator will be displayed inside thumb, `true` by default */
+  withThumbIndicator?: boolean;
 }
 
 export type SwitchFactory = Factory<{
@@ -96,6 +101,7 @@ export type SwitchFactory = Factory<{
 
 const defaultProps: Partial<SwitchProps> = {
   labelPosition: 'right',
+  withThumbIndicator: true,
 };
 
 const varsResolver = createVarsResolver<SwitchFactory>((theme, { radius, color, size }) => ({
@@ -138,6 +144,7 @@ export const Switch = factory<SwitchFactory>((_props, ref) => {
     variant,
     rootRef,
     mod,
+    withThumbIndicator,
     ...others
   } = props;
 
@@ -215,10 +222,15 @@ export const Switch = factory<SwitchFactory>((_props, ref) => {
 
       <Box
         aria-hidden="true"
+        component="span"
         mod={{ error, 'label-position': labelPosition, 'without-labels': !onLabel && !offLabel }}
         {...getStyles('track')}
       >
-        <Box component="span" mod="reduce-motion" {...getStyles('thumb')}>
+        <Box
+          component="span"
+          mod={{ 'reduce-motion': true, 'with-thumb-indicator': withThumbIndicator && !thumbIcon }}
+          {...getStyles('thumb')}
+        >
           {thumbIcon}
         </Box>
         <span {...getStyles('trackLabel')}>{_checked ? onLabel : offLabel}</span>

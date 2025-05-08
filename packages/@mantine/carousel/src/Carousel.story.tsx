@@ -1,9 +1,7 @@
 import { useRef, useState } from 'react';
 import Autoplay from 'embla-carousel-autoplay';
-import type { EmblaCarouselType } from 'embla-carousel-react';
-import { Box, Button, Modal } from '@mantine/core';
+import { Box, Button } from '@mantine/core';
 import { Carousel } from './Carousel';
-import { useAnimationOffsetEffect } from './use-animation-offset-effect';
 
 export default { title: 'Carousel' };
 
@@ -32,7 +30,7 @@ export function Usage() {
         slideSize={{ base: '100%', '400px': '50%', '600px': '33.333333%' }}
         height={200}
         withIndicators
-        align="start"
+        emblaOptions={{ align: 'start' }}
         type="container"
       >
         {slides}
@@ -54,7 +52,13 @@ export function Unstyled() {
 export function InitialSlide() {
   return (
     <div style={{ padding: 40, maxWidth: 500 }}>
-      <Carousel slideSize="70%" slideGap="md" height={200} loop initialSlide={2}>
+      <Carousel
+        slideSize="70%"
+        slideGap="md"
+        height={200}
+        emblaOptions={{ loop: true }}
+        initialSlide={2}
+      >
         {slides}
       </Carousel>
     </div>
@@ -64,7 +68,7 @@ export function InitialSlide() {
 export function SlidesToScroll() {
   return (
     <div style={{ padding: 40, maxWidth: 500 }}>
-      <Carousel slideSize="50%" slideGap="md" height={200} slidesToScroll={2}>
+      <Carousel slideSize="50%" slideGap="md" height={200} emblaOptions={{ slidesToScroll: 2 }}>
         {slides}
       </Carousel>
     </div>
@@ -118,52 +122,6 @@ export function DynamicSlides() {
       <Button onClick={() => setCount((c) => c + 1)}>Increment</Button>
       <Button onClick={() => setCount((c) => c - 1)}>Decrement</Button>
     </div>
-  );
-}
-
-export function AnimationOffsetEffect() {
-  const TRANSITION_DURATION = 200;
-  const [opened, setOpened] = useState(false);
-  const [embla, setEmbla] = useState<EmblaCarouselType | null>(null);
-
-  useAnimationOffsetEffect(embla, TRANSITION_DURATION);
-
-  return (
-    <>
-      <Button onClick={() => setOpened(true)}>Open Modal</Button>
-      <Modal
-        opened={opened}
-        size="300px"
-        padding={0}
-        transitionProps={{ duration: TRANSITION_DURATION }}
-        withCloseButton={false}
-        onClose={() => setOpened(false)}
-      >
-        <Carousel loop getEmblaApi={setEmbla}>
-          <Carousel.Slide>
-            <img
-              src="https://cataas.com/cat"
-              alt=""
-              style={{ width: 300, height: 200, objectFit: 'cover' }}
-            />
-          </Carousel.Slide>
-          <Carousel.Slide>
-            <img
-              src="https://cataas.com/cat/cute"
-              alt=""
-              style={{ width: 300, height: 200, objectFit: 'cover' }}
-            />
-          </Carousel.Slide>
-          <Carousel.Slide>
-            <img
-              src="https://cataas.com/cat/angry"
-              alt=""
-              style={{ width: 300, height: 200, objectFit: 'cover' }}
-            />
-          </Carousel.Slide>
-        </Carousel>
-      </Modal>
-    </>
   );
 }
 

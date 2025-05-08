@@ -10,7 +10,8 @@ import {
   useProps,
   useStyles,
 } from '@mantine/core';
-import { ControlsGroupSettings } from '../../types';
+import { ControlsGroupSettings, DateStringValue } from '../../types';
+import { toDateString } from '../../utils';
 import { useDatesContext } from '../DatesProvider';
 import { PickerControl, PickerControlProps } from '../PickerControl';
 import { getMonthInTabOrder } from './get-month-in-tab-order/get-month-in-tab-order';
@@ -25,16 +26,13 @@ export type MonthsListStylesNames =
   | 'monthsListControl';
 
 export interface MonthsListSettings extends ControlsGroupSettings {
-  /** Dayjs format for months list  */
+  /** dayjs format for months list */
   monthsListFormat?: string;
 
-  /** Adds props to month picker control based on date */
-  getMonthControlProps?: (date: Date) => Partial<PickerControlProps>;
+  /** Passes props down month picker control */
+  getMonthControlProps?: (date: DateStringValue) => Partial<PickerControlProps>;
 
-  /** Determines whether propagation for Escape key should be stopped */
-  __stopPropagation?: boolean;
-
-  /** Determines whether controls should be separated by spacing, true by default */
+  /** Determines whether controls should be separated, `true` by default */
   withCellSpacing?: boolean;
 }
 
@@ -48,8 +46,11 @@ export interface MonthsListProps
   /** Prevents focus shift when buttons are clicked */
   __preventFocus?: boolean;
 
+  /** Determines whether propagation for Escape key should be stopped */
+  __stopPropagation?: boolean;
+
   /** Year for which months list should be displayed */
-  year: Date;
+  year: DateStringValue;
 
   /** Component size */
   size?: MantineSize;
@@ -110,7 +111,12 @@ export const MonthsList = factory<MonthsListFactory>((_props, ref) => {
 
   const months = getMonthsData(year);
 
-  const monthInTabOrder = getMonthInTabOrder(months, minDate, maxDate, getMonthControlProps);
+  const monthInTabOrder = getMonthInTabOrder({
+    months,
+    minDate: toDateString(minDate)!,
+    maxDate: toDateString(maxDate)!,
+    getMonthControlProps,
+  });
 
   const rows = months.map((monthsRow, rowIndex) => {
     const cells = monthsRow.map((month, cellIndex) => {
@@ -128,7 +134,11 @@ export const MonthsList = factory<MonthsListFactory>((_props, ref) => {
             unstyled={unstyled}
             __staticSelector={__staticSelector || 'MonthsList'}
             data-mantine-stop-propagation={__stopPropagation || undefined}
-            disabled={isMonthDisabled(month, minDate, maxDate)}
+            disabled={isMonthDisabled({
+              month,
+              minDate: toDateString(minDate)!,
+              maxDate: toDateString(maxDate)!,
+            })}
             ref={(node) => __getControlRef?.(rowIndex, cellIndex, node!)}
             {...controlProps}
             onKeyDown={(event) => {

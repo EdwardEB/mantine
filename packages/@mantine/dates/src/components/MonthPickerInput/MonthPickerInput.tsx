@@ -11,9 +11,8 @@ import {
 } from '@mantine/core';
 import { useDatesInput } from '../../hooks';
 import { DatePickerType } from '../../types';
-import { getDefaultClampedDate, shiftTimezone } from '../../utils';
+import { getDefaultClampedDate } from '../../utils';
 import { pickCalendarProps } from '../Calendar';
-import { useDatesContext } from '../DatesProvider';
 import { MonthPicker, MonthPickerBaseProps, MonthPickerStylesNames } from '../MonthPicker';
 import { DateInputSharedProps, PickerInputBase } from '../PickerInputBase';
 
@@ -27,7 +26,7 @@ export interface MonthPickerInputProps<Type extends DatePickerType = 'default'>
     DateInputSharedProps,
     MonthPickerBaseProps<Type>,
     StylesApiProps<MonthPickerInputFactory> {
-  /** Dayjs format to display input value, "MMMM YYYY" by default  */
+  /** dayjs format for input value, `"MMMM YYYY"` by default  */
   valueFormat?: string;
 }
 
@@ -107,8 +106,6 @@ export const MonthPickerInput: MonthPickerInputComponent = factory<MonthPickerIn
       valueFormatter,
     });
 
-    const ctx = useDatesContext();
-
     return (
       <PickerInputBase
         formattedValue={formattedValue}
@@ -130,7 +127,6 @@ export const MonthPickerInput: MonthPickerInputComponent = factory<MonthPickerIn
       >
         <MonthPicker
           {...calendarProps}
-          date={shiftTimezone('add', calendarProps.date, ctx.getTimezone())}
           size={size}
           variant={variant}
           type={type}
@@ -150,7 +146,6 @@ export const MonthPickerInput: MonthPickerInputComponent = factory<MonthPickerIn
           __stopPropagation={dropdownType === 'popover'}
           minDate={minDate}
           maxDate={maxDate}
-          __timezoneApplied
         />
       </PickerInputBase>
     );
