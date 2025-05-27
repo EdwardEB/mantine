@@ -23,6 +23,7 @@ import { Calendar, CalendarBaseProps, CalendarStylesNames, pickCalendarProps } f
 import { useDatesContext } from '../DatesProvider';
 import { DecadeLevelSettings } from '../DecadeLevel';
 import { HiddenDatesInput } from '../HiddenDatesInput';
+import { isSameMonth } from '../Month';
 import { MonthLevelSettings } from '../MonthLevel';
 import { YearLevelSettings } from '../YearLevel';
 import { dateStringParser } from './date-string-parser/date-string-parser';
@@ -115,6 +116,7 @@ export const DateInput = factory<DateInputFactory>((_props, ref) => {
     onFocus,
     onBlur,
     onClick,
+    onKeyDown,
     readOnly,
     name,
     form,
@@ -126,6 +128,8 @@ export const DateInput = factory<DateInputFactory>((_props, ref) => {
     date,
     defaultDate,
     onDateChange,
+    getMonthControlProps,
+    getYearControlProps,
     ...rest
   } = props;
 
@@ -205,6 +209,13 @@ export const DateInput = factory<DateInputFactory>((_props, ref) => {
     setDropdownOpened(true);
   };
 
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setDropdownOpened(false);
+    }
+    onKeyDown?.(event);
+  };
+
   const _getDayProps = (day: DateStringValue) => ({
     ...getDayProps?.(day),
     selected: dayjs(_value!).isSame(day, 'day'),
@@ -269,6 +280,7 @@ export const DateInput = factory<DateInputFactory>((_props, ref) => {
               onBlur={handleInputBlur}
               onFocus={handleInputFocus}
               onClick={handleInputClick}
+              onKeyDown={handleInputKeyDown}
               readOnly={readOnly}
               rightSection={_rightSection}
               {...inputProps}
@@ -295,6 +307,14 @@ export const DateInput = factory<DateInputFactory>((_props, ref) => {
               size={inputProps.size as MantineSize}
               date={_date}
               onDateChange={setDate}
+              getMonthControlProps={(date) => ({
+                selected: typeof _value === 'string' ? isSameMonth(date, _value) : false,
+                ...getMonthControlProps?.(date),
+              })}
+              getYearControlProps={(date) => ({
+                selected: typeof _value === 'string' ? dayjs(date).isSame(_value, 'year') : false,
+                ...getYearControlProps?.(date),
+              })}
             />
           </Popover.Dropdown>
         </Popover>
