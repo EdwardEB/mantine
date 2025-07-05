@@ -75,6 +75,7 @@ export interface GetInputPropsOptions {
   type?: GetInputPropsType;
   withError?: boolean;
   withFocus?: boolean;
+
   [key: string]: any;
 }
 
@@ -206,6 +207,7 @@ export interface UseFormInput<
   }) => Record<string, any> | undefined | void;
   onSubmitPreventDefault?: 'always' | 'never' | 'validation-failed';
   touchTrigger?: 'focus' | 'change';
+  cascadeUpdates?: boolean;
 }
 
 export interface UseFormReturnType<
@@ -250,6 +252,7 @@ export interface UseFormReturnType<
   watch: Watch<Values>;
   key: Key<Values>;
   getInputNode: GetInputNode<Values>;
+  resetField: (path: PropertyKey) => void;
 }
 
 export type UseForm<

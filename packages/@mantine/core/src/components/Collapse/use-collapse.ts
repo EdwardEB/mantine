@@ -24,28 +24,34 @@ interface UseCollapse {
   transitionDuration?: number;
   transitionTimingFunction?: string;
   onTransitionEnd?: () => void;
+  keepMounted?: boolean;
 }
 
 interface GetCollapseProps {
   [key: string]: unknown;
+
   style?: CSSProperties;
   onTransitionEnd?: (e: TransitionEvent) => void;
   refKey?: string;
   ref?: React.ForwardedRef<HTMLDivElement>;
 }
 
+const collapsedHeight = 0;
+const getCollapsedStyles = (keepMounted: boolean): CSSProperties => ({
+  height: 0,
+  overflow: 'hidden',
+  ...(keepMounted ? {} : { display: 'none' }),
+});
+
 export function useCollapse({
   transitionDuration,
   transitionTimingFunction = 'ease',
   onTransitionEnd = () => {},
   opened,
+  keepMounted = false,
 }: UseCollapse): (props: GetCollapseProps) => Record<string, any> {
   const el = useRef<HTMLElement | null>(null);
-  const collapsedHeight = 0;
-  const collapsedStyles = {
-    height: 0,
-    overflow: 'hidden',
-  };
+  const collapsedStyles = getCollapsedStyles(keepMounted);
   const [styles, setStylesRaw] = useState<CSSProperties>(opened ? {} : collapsedStyles);
   const setStyles = (newStyles: {} | ((oldStyles: {}) => {})): void => {
     flushSync(() => setStylesRaw(newStyles));
@@ -107,16 +113,23 @@ export function useCollapse({
 
   function getCollapseProps({ style = {}, refKey = 'ref', ...rest }: GetCollapseProps = {}) {
     const theirRef: any = rest[refKey];
-    const props = {
+    const props: any = {
       'aria-hidden': !opened,
-      inert: !opened,
       ...rest,
       [refKey]: mergeRefs(el, theirRef),
       onTransitionEnd: handleTransitionEnd,
       style: { boxSizing: 'border-box', ...style, ...styles },
     };
 
-    if (!React.version.startsWith('18')) {
+    // Handle inert attribute based on React version
+    if (React.version.startsWith('18')) {
+      // React 18: Use empty string for inert=true, undefined for inert=false
+      if (!opened) {
+        props.inert = '';
+      }
+      // Don't set inert property when opened=true (leave it undefined)
+    } else {
+      // React 19+: Use boolean values
       props.inert = !opened;
     }
 

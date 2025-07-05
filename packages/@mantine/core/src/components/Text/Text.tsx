@@ -42,7 +42,7 @@ export interface TextProps extends BoxProps, StylesApiProps<TextFactory> {
   __staticSelector?: string;
 
   /** Controls `font-size` and `line-height`, `'md'` by default */
-  size?: MantineFontSize & MantineLineHeight;
+  size?: MantineFontSize | MantineLineHeight;
 
   /** Number of lines after which Text will be truncated */
   lineClamp?: number;
@@ -75,11 +75,13 @@ export type TextFactory = PolymorphicFactory<{
   variant: TextVariant;
 }>;
 
-const defaultProps: Partial<TextProps> = {
+const defaultProps = {
   inherit: false,
-};
+} satisfies Partial<TextProps>;
 
 const varsResolver = createVarsResolver<TextFactory>(
+  // Will be removed in 9.0
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   (theme, { variant, lineClamp, gradient, size, color }) => ({
     root: {
       '--text-fz': getFontSize(size),

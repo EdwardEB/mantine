@@ -46,12 +46,13 @@ export function useForm<
   validate: rules,
   onSubmitPreventDefault = 'always',
   touchTrigger = 'change',
+  cascadeUpdates = false,
 }: UseFormInput<Values, TransformValues> = {}): UseFormReturnType<Values, TransformValues> {
   const $errors = useFormErrors<Values>(initialErrors);
   const $values = useFormValues<Values>({ initialValues, onValuesChange, mode });
   const $status = useFormStatus<Values>({ initialDirty, initialTouched, $values, mode });
   const $list = useFormList<Values>({ $values, $errors, $status });
-  const $watch = useFormWatch<Values>({ $status });
+  const $watch = useFormWatch<Values>({ $status, cascadeUpdates });
   const [formKey, setFormKey] = useState(0);
   const [fieldKeys, setFieldKeys] = useState<Record<string, number>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -258,10 +259,11 @@ export function useForm<
     watch: $watch.watch,
 
     initialized: $values.initialized.current,
-    values: $values.stateValues,
+    values: mode === 'uncontrolled' ? $values.refValues.current : $values.stateValues,
     getValues: $values.getValues,
     getInitialValues: $values.getValuesSnapshot,
     setInitialValues: $values.setValuesSnapshot,
+    resetField: $values.resetField,
     initialize,
     setValues,
     setFieldValue,
