@@ -26,6 +26,7 @@ import {
 import {
   Calendar,
   CalendarBaseProps,
+  CalendarProps,
   CalendarSettings,
   CalendarStylesNames,
   pickCalendarProps,
@@ -59,8 +60,8 @@ export interface DatePickerBaseProps<Type extends DatePickerType = 'default'>
     YearLevelBaseSettings,
     MonthLevelBaseSettings,
     CalendarBaseProps,
-    Omit<CalendarSettings, 'hasNextLevel'> {
-  /** Max level that user can go up to, `'decade'` by default */
+    Omit<CalendarSettings, 'hasNextLevel'>,
+    Pick<CalendarProps, 'enableKeyboardNavigation'> {
   maxLevel?: CalendarLevel;
 
   /** Initial displayed level (uncontrolled) */
@@ -136,6 +137,7 @@ export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_prop
     unstyled,
     size,
     vars,
+    attributes,
     ...rest
   } = props;
 
@@ -152,6 +154,7 @@ export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_prop
     classNames,
     styles,
     unstyled,
+    attributes,
     rootSelector: presets ? 'datePickerRoot' : undefined,
     varsResolver,
     vars,
@@ -210,7 +213,7 @@ export const DatePicker: DatePickerComponent = factory<DatePickerFactory>((_prop
         ...calendarProps.getYearControlProps?.(date),
       })}
       hideOutsideDates={calendarProps.hideOutsideDates ?? calendarProps.numberOfColumns !== 1}
-      {...(!presets ? { className, style } : {})}
+      {...(!presets ? { className, style, attributes } : {})}
     />
   );
 

@@ -35,7 +35,9 @@ import {
 } from './TimePicker.types';
 import { TimePresets } from './TimePresets/TimePresets';
 import { useTimePicker } from './use-time-picker';
+import { clampTime } from './utils/clamp-time/clamp-time';
 import { getParsedTime } from './utils/get-parsed-time/get-parsed-time';
+import { getTimeString } from './utils/get-time-string/get-time-string';
 import classes from './TimePicker.module.css';
 
 export type TimePickerStylesNames =
@@ -71,7 +73,7 @@ export interface TimePickerProps
   /** Called when the value changes */
   onChange?: (value: string) => void;
 
-  /** Determines whether the clear button should be displayed, `false` by default */
+  /** Determines whether the clear button should be displayed @default `false` */
   clearable?: boolean;
 
   /** `name` prop passed down to the hidden input */
@@ -89,16 +91,16 @@ export interface TimePickerProps
   /** Time format, `'24h'` by default */
   format?: TimePickerFormat;
 
-  /** Number by which hours are incremented/decremented, `1` by default */
+  /** Number by which hours are incremented/decremented @default `1` */
   hoursStep?: number;
 
-  /** Number by which minutes are incremented/decremented, `1` by default */
+  /** Number by which minutes are incremented/decremented @default `1` */
   minutesStep?: number;
 
-  /** Number by which seconds are incremented/decremented, `1` by default */
+  /** Number by which seconds are incremented/decremented @default `1` */
   secondsStep?: number;
 
-  /** Determines whether the seconds input should be displayed, `false` by default */
+  /** Determines whether the seconds input should be displayed @default `false` */
   withSeconds?: boolean;
 
   /** `aria-label` of hours input */
@@ -113,10 +115,10 @@ export interface TimePickerProps
   /** `aria-label` of am/pm input */
   amPmInputLabel?: string;
 
-  /** Labels used for am/pm values, `{ am: 'AM', pm: 'PM' }` by default */
+  /** Labels used for am/pm values @default `{ am: 'AM', pm: 'PM' }` */
   amPmLabels?: TimePickerAmPmLabels;
 
-  /** Determines whether the dropdown with time controls list should be visible when the input has focus, `false` by default */
+  /** Determines whether the dropdown with time controls list should be visible when the input has focus @default `false` */
   withDropdown?: boolean;
 
   /** Props passed down to `Popover` component */
@@ -170,7 +172,7 @@ export interface TimePickerProps
   /** Time presets to display in the dropdown */
   presets?: TimePickerPresets;
 
-  /** Maximum height of the content displayed in the dropdown in px, `200` by default */
+  /** Maximum height of the content displayed in the dropdown in px @default `200` */
   maxDropdownContentHeight?: number;
 
   /** Props passed down to all underlying `ScrollArea` components */
@@ -255,6 +257,7 @@ export const TimePicker = factory<TimePickerFactory>((_props, ref) => {
     presets,
     maxDropdownContentHeight,
     scrollAreaProps,
+    attributes,
     ...others
   } = props;
 
@@ -273,6 +276,7 @@ export const TimePicker = factory<TimePickerFactory>((_props, ref) => {
     classNames,
     styles,
     unstyled,
+    attributes,
     vars,
     varsResolver,
   });
@@ -310,6 +314,21 @@ export const TimePicker = factory<TimePickerFactory>((_props, ref) => {
 
   const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
+      const computedValue = controller.values;
+      const timeString = getTimeString({
+        ...computedValue,
+        format,
+        amPmLabels,
+        withSeconds: !!withSeconds,
+      });
+
+      if (timeString.valid && min && max) {
+        const clamped = clampTime(timeString.value, min, max);
+
+        if (clamped.timeString !== timeString.value) {
+          controller.setTimeString(clamped.timeString);
+        }
+      }
       hasFocusRef.current = false;
       onBlur?.(event);
     }
@@ -386,6 +405,7 @@ export const TimePicker = factory<TimePickerFactory>((_props, ref) => {
                   onNextInput={() => controller.focus('minutes')}
                   min={format === '12h' ? 1 : 0}
                   max={format === '12h' ? 12 : 23}
+                  allowTemporaryZero={format === '12h'}
                   focusable
                   step={hoursStep}
                   ref={_hoursRef}
@@ -396,6 +416,15 @@ export const TimePicker = factory<TimePickerFactory>((_props, ref) => {
                   onFocus={(event) => {
                     handleFocus(event);
                     hoursInputProps?.onFocus?.(event);
+                  }}
+                  onBlur={(event) => {
+                    const actualInputValue = event.currentTarget.value;
+                    const numericValue = actualInputValue ? parseInt(actualInputValue, 10) : null;
+
+                    if (format === '12h' && numericValue === 0) {
+                      controller.setHours(12);
+                    }
+                    hoursInputProps?.onBlur?.(event);
                   }}
                 />
                 <span>:</span>
