@@ -41,12 +41,14 @@ const GETTING_STARTED_PAGES_GROUP: MdxPagesCategory[] = [
       MDX_DATA.Jest,
       MDX_DATA.Vitest,
       MDX_DATA.EslintConfig,
+      MDX_DATA.LLMDocumentation,
     ],
   },
 
   {
     category: 'Changelog',
     pages: [
+      MDX_DATA.Changelog830,
       MDX_DATA.Changelog820,
       MDX_DATA.Changelog810,
       MDX_DATA.Changelog800,
@@ -74,7 +76,7 @@ const GETTING_STARTED_PAGES_GROUP: MdxPagesCategory[] = [
 
   {
     category: 'Migration guides',
-    pages: [MDX_DATA.SixToSeven, MDX_DATA.SevenToEight],
+    pages: [MDX_DATA.SixToSeven, MDX_DATA.SevenToEight, MDX_DATA.Tiptap3Migration],
   },
 ];
 
@@ -393,6 +395,7 @@ const EXTENSIONS_PAGES_GROUP: MdxPagesCategory[] = [
     category: 'Dates',
     pages: [
       MDX_DATA.GettingStartedDates,
+      MDX_DATA.MiniCalendar,
       MDX_DATA.Calendar,
       MDX_DATA.DateTimePicker,
       MDX_DATA.DatePicker,
