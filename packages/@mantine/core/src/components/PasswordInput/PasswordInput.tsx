@@ -30,7 +30,7 @@ export type PasswordInputCssVariables = {
 
 export interface PasswordInputProps
   extends BoxProps,
-    __BaseInputProps,
+    Omit<__BaseInputProps, 'pointer'>,
     StylesApiProps<PasswordInputFactory>,
     ElementProps<'input', 'size'> {
   /** A component to replace the visibility toggle icon */
@@ -157,6 +157,7 @@ export const PasswordInput = factory<PasswordInputFactory>((_props, ref) => {
       disabled={disabled}
       radius={radius}
       aria-hidden={!visibilityToggleButtonProps}
+      aria-pressed={_visible}
       tabIndex={-1}
       {...visibilityToggleButtonProps}
       variant={visibilityToggleButtonProps?.variant ?? 'subtle'}
